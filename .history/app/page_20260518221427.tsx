@@ -90,7 +90,7 @@ export default function HomePage() {
       <div className="max-w-6xl mx-auto px-6 mt-20">
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <img
-            src="/uploads/w.webp"
+            src="/wedding-dress.jpg"
             className="rounded-2xl shadow-lg object-cover w-full h-[350px]"
             alt="فستان زفاف"
           />

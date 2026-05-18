@@ -42,9 +42,19 @@ export default function HomePage() {
 
         {/* BUTTONS */}
         <div className="mt-8 flex gap-4 justify-center flex-wrap">
-          
+          <button
+            onClick={() => router.push("/login")}
+            className="px-6 py-3 bg-pink-600 text-white rounded-xl shadow hover:bg-pink-700"
+          >
+            ابدأ الآن
+          </button>
 
- 
+          <button
+            onClick={() => router.push("/products")}
+            className="px-6 py-3 border border-pink-600 text-pink-600 rounded-xl hover:bg-pink-50"
+          >
+            عرض الفساتين
+          </button>
 
           <a
             href={`tel:${phoneNumber}`}
@@ -90,7 +100,7 @@ export default function HomePage() {
       <div className="max-w-6xl mx-auto px-6 mt-20">
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <img
-            src="/uploads/w.webp"
+            src="/wedding-dress.jpg"
             className="rounded-2xl shadow-lg object-cover w-full h-[350px]"
             alt="فستان زفاف"
           />
@@ -106,12 +116,8 @@ export default function HomePage() {
             </p>
 
             <ul className="mt-4 space-y-2 text-gray-700">
-              <li>✔ 👗 إدارة الفساتين بسهولة</li>
-              <li>✔ ادارة حسابات</li>
-              <li>✔ 💰 تتبع المدفوعات</li>
-              <li>✔ 📊 تقارير يومية وشهرية </li>
-              <li>✔ 👤 إدارة العملاء</li>
-              <li>✔ 🔍 بحث وتصنيف سريع</li>          
+              <li>✔ دعم عدة فروع</li>
+              <li>✔ بحث وتصنيف سريع</li>
               <li>✔ يعمل على الهاتف (PWA)</li>
               <li>✔ طباعة الفواتير والإيصالات</li>
             </ul>
@@ -129,13 +135,12 @@ export default function HomePage() {
           نظام بسيط، سريع، واحترافي لإدارة التأجير.
         </p>
 
-
-         <p className="mt-2 text-pink-100">
-         اتصل الان 07701244448
-        </p>
-
-
-        
+        <button
+          onClick={() => router.push("/login")}
+          className="mt-6 px-8 py-3 bg-white text-pink-600 font-semibold rounded-xl hover:bg-gray-100"
+        >
+          دخول النظام
+        </button>
       </div>
 
       {/* FOOTER */}

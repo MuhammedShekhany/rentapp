@@ -42,7 +42,12 @@ export default function HomePage() {
 
         {/* BUTTONS */}
         <div className="mt-8 flex gap-4 justify-center flex-wrap">
-          
+          <button
+            onClick={() => router.push("/login")}
+            className="px-6 py-3 bg-pink-600 text-white rounded-xl shadow hover:bg-pink-700"
+          >
+            ابدأ الآن
+          </button>
 
  
 
@@ -90,7 +95,7 @@ export default function HomePage() {
       <div className="max-w-6xl mx-auto px-6 mt-20">
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <img
-            src="/uploads/w.webp"
+            src="/wedding-dress.jpg"
             className="rounded-2xl shadow-lg object-cover w-full h-[350px]"
             alt="فستان زفاف"
           />

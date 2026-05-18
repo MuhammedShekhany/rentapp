@@ -17,14 +17,12 @@ export async function POST(req: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
+    // 🔥 خذ الامتداد الحقيقي
     const ext = path.extname(file.name);
 
     const cleanName = `file-${Date.now()}-${randomUUID()}${ext}`;
 
-    // ✅ from env
-    const uploadDir =
-      process.env.IMAGE_UPLOAD_PATH ||
-      "/home/deploy/myapps/rentimages/";
+    const uploadDir = "/home/deploy/myapps/rentimages/";
 
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -36,7 +34,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      url: `/rentimages/${cleanName}`,
+      url:`/rentimages/${cleanName}`,
     });
 
   } catch (error) {
@@ -44,7 +42,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: false,
-      message: `Upload failed ${error}`,
+      message: "Upload failed",
     });
   }
 }

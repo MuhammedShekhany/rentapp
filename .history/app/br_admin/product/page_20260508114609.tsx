@@ -253,7 +253,6 @@ export default function ProductPage() {
                             src={item.pro_img}
                             alt={item.pro_name}
                             className="w-16 h-16 object-cover rounded-xl border"
-                            
                           />
                         ) : (
                           <div className="text-slate-400">
