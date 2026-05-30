@@ -1,0 +1,12 @@
+{
+    "folder-color.pathColors": [
+        {
+            "folderPath": "rentapp\\app\\api\\",
+            "color": "foldercolorizer.color_afaf00"
+        },
+        {
+            "folderPath": "rentapp\\app\\br_admin\\",
+            "color": "foldercolorizer.color_0087ff"
+        }
+    ]
+}
