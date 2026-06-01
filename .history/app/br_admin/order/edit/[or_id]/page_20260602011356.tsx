@@ -162,6 +162,8 @@ export default function EditOrderPage() {
   }, [or_id, router]);
 
   useEffect(() => {
+
+     console.log( products);
     const handle = (e: MouseEvent) => {
       if (inlineRef.current && !inlineRef.current.contains(e.target as Node))
         setShowInlineList(false);
@@ -648,20 +650,13 @@ export default function EditOrderPage() {
                     <tr key={d.pro_id} className="trow">
                       <td
                         onClick={() => {
-                          
                          
-                          const product = products.find(p => String(p.pro_id) === String(d.pro_id));
+                          const product = products.find(p => p.pro_id === d.pro_id);
                           if (product?.pro_img) {
                             setPreviewImage(product.pro_img);
                             
                           }
                           else {
-                            if (!product) {
-                              console.log(" no Product"); // لتسهيل التتبع
-                            }
-                            else if (!product.pro_img) {
-                              console.log("Product or image not found for ID:", d.pro_id); // لتسهيل التتبع
-                            }
                             console.log("Product or image not found for ID:", d.pro_id); // لتسهيل التتبع
                           }
                         }}

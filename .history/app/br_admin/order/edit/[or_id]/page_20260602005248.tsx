@@ -16,8 +16,6 @@ type DetailType = {
   ord_qt: number;
   ord_price: number;
   ord_total: number;
-  pro_img?: string;
-  
 };
 
 
@@ -647,28 +645,16 @@ export default function EditOrderPage() {
                   details.map((d, i) => (
                     <tr key={d.pro_id} className="trow">
                       <td
-                        onClick={() => {
-                          
-                         
-                          const product = products.find(p => String(p.pro_id) === String(d.pro_id));
-                          if (product?.pro_img) {
-                            setPreviewImage(product.pro_img);
-                            
-                          }
-                          else {
-                            if (!product) {
-                              console.log(" no Product"); // لتسهيل التتبع
-                            }
-                            else if (!product.pro_img) {
-                              console.log("Product or image not found for ID:", d.pro_id); // لتسهيل التتبع
-                            }
-                            console.log("Product or image not found for ID:", d.pro_id); // لتسهيل التتبع
-                          }
-                        }}
-                        style={{ cursor: "pointer", fontWeight: 600 }}
-                      >
-                        {d.pro_name}
-                      </td>
+                                                onClick={() => {
+                                                    const product = products.find(p => p.pro_id === d.pro_id);
+                                                    if (product?.pro_img) {
+                                                        setPreviewImage(product.pro_img);
+                                                    }
+                                                }}
+                                                style={{ cursor: "pointer", fontWeight: 600 }}
+                                            >
+                                                {d.pro_name}
+                                            </td>
                       <td style={{ ...s.td, textAlign: "center" }}>
                         {editingPriceIndex === i ? (
                           <input

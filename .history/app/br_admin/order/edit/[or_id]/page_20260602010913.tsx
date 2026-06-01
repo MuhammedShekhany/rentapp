@@ -648,20 +648,12 @@ export default function EditOrderPage() {
                     <tr key={d.pro_id} className="trow">
                       <td
                         onClick={() => {
-                          
-                         
-                          const product = products.find(p => String(p.pro_id) === String(d.pro_id));
+                          const product = products.find(p => p.pro_id === d.pro_id);
                           if (product?.pro_img) {
                             setPreviewImage(product.pro_img);
-                            
+                            console.log( product.pro_img); // لتسهيل التتبع
                           }
                           else {
-                            if (!product) {
-                              console.log(" no Product"); // لتسهيل التتبع
-                            }
-                            else if (!product.pro_img) {
-                              console.log("Product or image not found for ID:", d.pro_id); // لتسهيل التتبع
-                            }
                             console.log("Product or image not found for ID:", d.pro_id); // لتسهيل التتبع
                           }
                         }}

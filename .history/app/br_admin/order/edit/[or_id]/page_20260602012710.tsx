@@ -648,7 +648,8 @@ export default function EditOrderPage() {
                     <tr key={d.pro_id} className="trow">
                       <td
                         onClick={() => {
-                          
+                          console.log("All current products in state:", products);
+    console.log("Looking for detail pro_id:", d.pro_id);
                          
                           const product = products.find(p => String(p.pro_id) === String(d.pro_id));
                           if (product?.pro_img) {
