@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import heic2any from "heic2any";
-import imageCompression from "browser-image-compression";
 
 type CategoryType = {
   pro_gat_id: number;
@@ -97,50 +95,10 @@ export default function AddProductPage() {
   // ======================
   // رفع الصورة
   // ======================
-const handleUpload = async (file: File) => {
-  try {
-    let uploadFile: File = file;
-
-    const ext = file.name.split(".").pop()?.toLowerCase();
-
-    // load ONLY in browser
-    const heic2any = (await import("heic2any")).default;
-    const imageCompression = (await import("browser-image-compression")).default;
-
-    // =========================
-    // Convert HEIC
-    // =========================
-    if (
-      file.type === "image/heic" ||
-      file.type === "image/heif" ||
-      ext === "heic" ||
-      ext === "heif"
-    ) {
-      const convertedBlob = await heic2any({
-        blob: file,
-        toType: "image/jpeg",
-        quality: 0.85,
-      });
-
-      uploadFile = new File(
-        [convertedBlob as Blob],
-        file.name.replace(/\.(heic|heif)$/i, ".jpg"),
-        { type: "image/jpeg" }
-      );
-    }
-
-    // =========================
-    // Compress
-    // =========================
-    uploadFile = await imageCompression(uploadFile, {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 1600,
-      useWebWorker: true,
-      initialQuality: 0.8,
-    });
-
+  const handleUpload = async (file: File) => {
     const formData = new FormData();
-    formData.append("file", uploadFile);
+
+    formData.append("file", file);
 
     const res = await fetch("/api/upload", {
       method: "POST",
@@ -149,15 +107,12 @@ const handleUpload = async (file: File) => {
 
     const data = await res.json();
 
-    if (!data.success) throw new Error(data.message);
+    if (!data.success) {
+      throw new Error("فشل رفع الصورة");
+    }
 
     return data.url;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Upload failed");
-
-  }
-};
+  };
 
   // ======================
   // إضافة المنتج

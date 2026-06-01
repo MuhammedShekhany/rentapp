@@ -17,7 +17,6 @@ type DetailType = {
     ord_qt: number;
     ord_price: number;
     ord_total: number;
-    pro_img?: string;
 };
 
 
@@ -66,7 +65,7 @@ export default function AddOrderPage() {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
 
-
+    
 
     useEffect(() => {
         const session = localStorage.getItem("userSession");
@@ -836,13 +835,11 @@ export default function AddOrderPage() {
                                         <tr key={d.pro_id} className="trow">
                                             {/* PRODUCT */}
                                             <td
-                                                onClick={() => {
-                                                    const product = products.find(p => p.pro_id === d.pro_id);
-                                                    if (product?.pro_img) {
-                                                        setPreviewImage(product.pro_img);
-                                                    }
+                                                style={{
+                                                    ...s.td,
+                                                    textAlign: "right",
+                                                    fontWeight: 600,
                                                 }}
-                                                style={{ cursor: "pointer", fontWeight: 600 }}
                                             >
                                                 {d.pro_name}
                                             </td>
@@ -1002,12 +999,6 @@ export default function AddOrderPage() {
                 </div>
             </div>
 
-
-
-
-
-
-
             {/* ══ PRODUCT PICKER all ══ */}
             {showModal && (
                 <div style={s.overlay}>
@@ -1039,10 +1030,6 @@ export default function AddOrderPage() {
                                 <button onClick={() => setModalSearch("")} style={s.clearBtn}>✕</button>
                             )}
                         </div>
-
-
-                        {/* ══ PRODUCt all when click all product ══ */}
-                        {/* grid button */}
                         <div style={s.productGrid}>
                             {modalFiltered.length === 0 ? (
                                 <div style={s.noResult}><p style={{ color: "#9ca3af", fontSize: 13, margin: 0 }}>لا توجد نتائج</p></div>
@@ -1077,15 +1064,10 @@ export default function AddOrderPage() {
                                                     <img
                                                         src={p.pro_img}
                                                         alt={p.pro_name}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setPreviewImage(p.pro_img);
-                                                        }}
                                                         style={{
                                                             width: "100%",
                                                             height: "100%",
                                                             objectFit: "cover",
-                                                            cursor: "zoom-in",
                                                         }}
                                                     />
                                                 ) : (
@@ -1135,71 +1117,37 @@ export default function AddOrderPage() {
 
 
 
-            {previewImage && (
-                <div
-                    onClick={(e) => {
-                        setPreviewImage(null);
-
-                        e.stopPropagation();
-                    }}
-                    style={{
-                        position: "fixed",
-                        inset: 0,
-                        background: "rgba(0,0,0,0.8)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 9999,
-                        padding: 20,
-                    }}
-                >
-                    <div
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                            position: "relative",
-                        }}
-                    >
-                        {/* Close Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewImage(null);
-                            }}
-                            style={{
-                                position: "absolute",
-                                top: -15,
-                                right: -15,
-                                width: 40,
-                                height: 40,
-                                borderRadius: "50%",
-                                border: "none",
-                                background: "#ef4444",
-                                color: "#fff",
-                                fontSize: 24,
-                                cursor: "pointer",
-                                fontWeight: "bold",
-                                zIndex: 10000,
-                                pointerEvents: "auto",
-                            }}
-                        >
-                            ×
-                        </button>
-
-                        <img
-                            src={previewImage}
-                            alt="Preview"
-                            style={{
-                                maxWidth: "90vw",
-                                maxHeight: "90vh",
-                                borderRadius: 12,
-                                objectFit: "contain",
-                                background: "#fff",
-                                display: "block",
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
+            {
+    previewImage && (
+        <div
+            onClick={() => setPreviewImage(null)}
+            style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.8)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 9999,
+                padding: 20,
+            }}
+        >
+            <img
+                src={previewImage}
+                alt="Preview"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                    maxWidth: "90%",
+                    maxHeight: "90vh",
+                    borderRadius: 12,
+                    objectFit: "contain",
+                    background: "#fff",
+                }}
+            />
+        </div>
+ 
+ )
+}
         </div>
     );
 }

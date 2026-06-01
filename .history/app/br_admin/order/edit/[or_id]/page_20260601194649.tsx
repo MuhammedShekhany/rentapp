@@ -628,16 +628,7 @@ export default function EditOrderPage() {
                 ) : (
                   details.map((d, i) => (
                     <tr key={d.pro_id} className="trow">
-                      <td 
-                      onClick={() => {
-                                                    const product = products.find(p => p.pro_id === d.pro_id);
-                                                    if (product?.pro_img) {
-                                                        setPreviewImage(product.pro_img);
-                                                    }
-                                                }}
-                      style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>
-                        {d.pro_name}
-                        </td>
+                      <td style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>{d.pro_name}</td>
                       <td style={{ ...s.td, textAlign: "center" }}>
                         {editingPriceIndex === i ? (
                           <input

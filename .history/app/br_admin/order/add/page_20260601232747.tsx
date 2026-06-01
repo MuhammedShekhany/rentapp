@@ -17,7 +17,6 @@ type DetailType = {
     ord_qt: number;
     ord_price: number;
     ord_total: number;
-    pro_img?: string;
 };
 
 
@@ -836,13 +835,11 @@ export default function AddOrderPage() {
                                         <tr key={d.pro_id} className="trow">
                                             {/* PRODUCT */}
                                             <td
-                                                onClick={() => {
-                                                    const product = products.find(p => p.pro_id === d.pro_id);
-                                                    if (product?.pro_img) {
-                                                        setPreviewImage(product.pro_img);
-                                                    }
+                                                style={{
+                                                    ...s.td,
+                                                    textAlign: "right",
+                                                    fontWeight: 600,
                                                 }}
-                                                style={{ cursor: "pointer", fontWeight: 600 }}
                                             >
                                                 {d.pro_name}
                                             </td>
@@ -1137,8 +1134,7 @@ export default function AddOrderPage() {
 
             {previewImage && (
                 <div
-                    onClick={(e) => {
-                        setPreviewImage(null);
+                    onClick={(e) =>{ setPreviewImage(null);
 
                         e.stopPropagation();
                     }}

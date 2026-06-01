@@ -17,7 +17,6 @@ type DetailType = {
     ord_qt: number;
     ord_price: number;
     ord_total: number;
-    pro_img?: string;
 };
 
 
@@ -836,13 +835,11 @@ export default function AddOrderPage() {
                                         <tr key={d.pro_id} className="trow">
                                             {/* PRODUCT */}
                                             <td
-                                                onClick={() => {
-                                                    const product = products.find(p => p.pro_id === d.pro_id);
-                                                    if (product?.pro_img) {
-                                                        setPreviewImage(product.pro_img);
-                                                    }
+                                                style={{
+                                                    ...s.td,
+                                                    textAlign: "right",
+                                                    fontWeight: 600,
                                                 }}
-                                                style={{ cursor: "pointer", fontWeight: 600 }}
                                             >
                                                 {d.pro_name}
                                             </td>
@@ -1041,8 +1038,8 @@ export default function AddOrderPage() {
                         </div>
 
 
-                        {/* ══ PRODUCt all when click all product ══ */}
-                        {/* grid button */}
+ {/* ══ PRODUCt all when click all product ══ */}
+                         {/* grid button */}
                         <div style={s.productGrid}>
                             {modalFiltered.length === 0 ? (
                                 <div style={s.noResult}><p style={{ color: "#9ca3af", fontSize: 13, margin: 0 }}>لا توجد نتائج</p></div>
@@ -1137,11 +1134,7 @@ export default function AddOrderPage() {
 
             {previewImage && (
                 <div
-                    onClick={(e) => {
-                        setPreviewImage(null);
-
-                        e.stopPropagation();
-                    }}
+                    onClick={() => setPreviewImage(null)}
                     style={{
                         position: "fixed",
                         inset: 0,
@@ -1161,10 +1154,7 @@ export default function AddOrderPage() {
                     >
                         {/* Close Button */}
                         <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewImage(null);
-                            }}
+                            onClick={() => setPreviewImage(null)}
                             style={{
                                 position: "absolute",
                                 top: -15,
@@ -1179,7 +1169,6 @@ export default function AddOrderPage() {
                                 cursor: "pointer",
                                 fontWeight: "bold",
                                 zIndex: 10000,
-                                pointerEvents: "auto",
                             }}
                         >
                             ×

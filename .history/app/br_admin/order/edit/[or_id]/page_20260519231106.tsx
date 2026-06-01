@@ -7,7 +7,7 @@ type ProductType = {
   pro_id: string;
   pro_name: string;
   pro_price: number;
-  pro_img: string;
+  pro_img:string;
 };
 
 type DetailType = {
@@ -60,7 +60,6 @@ export default function EditOrderPage() {
 
   const [editingPriceIndex, setEditingPriceIndex] = useState<number | null>(null);
 
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const updatePrice = (index: number, value: number) => {
     const price = Math.max(0, value || 0);
@@ -197,7 +196,7 @@ export default function EditOrderPage() {
               ord_qt: newQty,
               // ملاحظة: نستخدم item.ord_price (السعر الحالي في الجدول) 
               // لضمان عدم ضياع التعديل اليدوي للسعر إذا قام به المستخدم
-              ord_total: newQty * item.ord_price,
+              ord_total: newQty * item.ord_price, 
             };
           }
           return item;
@@ -221,7 +220,7 @@ export default function EditOrderPage() {
     if (fromModal) {
       // إذا أردت إغلاق المودال فور الإضافة اتركها true، 
       // أو false إذا كنت تريد إضافة عدة منتجات دفعة واحدة
-      setShowModal(false);
+      setShowModal(false); 
       setModalSearch("");
     } else {
       setInlineSearch("");
@@ -247,16 +246,16 @@ export default function EditOrderPage() {
     if (!or_date || !user_id || !br_id || details.length === 0)
       return alert("يرجى تعبئة جميع الحقول وإضافة منتج واحد على الأقل");
     setLoading(true);
-    const now = new Date();
+const now = new Date();
 
-    // take selected date
-    const datePart = or_date; // "2026-05-10"
+// take selected date
+const datePart = or_date; // "2026-05-10"
 
-    // add current time
-    const timePart =
-      now.toTimeString().split(" ")[0]; // "14:35:22"
+// add current time
+const timePart =
+  now.toTimeString().split(" ")[0]; // "14:35:22"
 
-    const fullDateTime = `${datePart}T${timePart}`;
+const fullDateTime = `${datePart}T${timePart}`;
 
 
     try {
@@ -264,7 +263,7 @@ export default function EditOrderPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          or_date: fullDateTime,
+          or_date:fullDateTime,
           or_total: total,
           or_note,
           or_cus_name,
@@ -455,11 +454,11 @@ export default function EditOrderPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                 <label style={{ ...s.extraLabel, fontSize: 11, whiteSpace: "nowrap", minWidth: 80 }}>تاريخ الطلب</label>
                 <input
-                  type="date"
-                  value={or_date}
-                  onChange={(e) => setOrDate(e.target.value)}
-                  style={{ ...s.extraInput, padding: "4px 6px", height: 30, flex: 1 }}
-                />
+  type="date"
+  value={or_date}
+  onChange={(e) => setOrDate(e.target.value)}
+  style={{ ...s.extraInput, padding: "4px 6px", height: 30, flex: 1 }}
+/>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                 <label style={{ ...s.extraLabel, fontSize: 11, whiteSpace: "nowrap", minWidth: 80 }}>تاريخ الحجز</label>
@@ -519,17 +518,13 @@ export default function EditOrderPage() {
               {inlineSearch && (
                 <button onClick={() => { setInlineSearch(""); setShowInlineList(false); }} style={s.clearX}>✕</button>
               )}
-
-
-
-              {/* add item from search bar */}
               {showInlineList && (
                 <div style={s.dropdown}>
                   {inlineFiltered.length === 0 ? (
                     <div style={s.dropEmpty}>لا توجد نتائج</div>
                   ) : (
                     inlineFiltered.map((p) => {
-                      const inCart = details.find((d) => String(d.pro_id) === String(p.pro_id));
+                      const inCart = details.find((d) =>  String(d.pro_id) === String(p.pro_id));
                       return (
                         <div
                           key={p.pro_id}
@@ -537,59 +532,7 @@ export default function EditOrderPage() {
                           style={inCart ? { ...s.dropItem, background: "#f0fdf4" } : s.dropItem}
                           className="drop-item"
                         >
-
-                          {/* in search product */}
-                          {p.pro_img ? (
-                            <img
-                              src={p.pro_img}
-                              alt={p.pro_name}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewImage(p.pro_img);
-                              }}
-                              style={{
-                                width: 100,
-                                height: 100,
-                                borderRadius: 8,
-                                objectFit: "cover",
-                                flexShrink: 0,
-                                border: "1px solid #e5e7eb",
-                                cursor: "zoom-in",
-                              }}
-                            />
-                          ) : (
-                            <div
-                              style={{
-                                width: 100,
-                                height: 100,
-                                borderRadius: 8,
-                                background: "#f3f4f6",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flexShrink: 0,
-                              }}
-                            >
-                              <svg
-                                width="400"
-                                height="400"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="#9ca3af"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                              >
-                                <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-                                <polyline points="16 3 12 7 8 3" />
-                              </svg>
-                            </div>
-                          )}
-
-
-
                           <span style={s.dropName}>{p.pro_name}</span>
-
-
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             {inCart && <span style={s.inCartTag}>× {inCart.ord_qt}</span>}
                             <span style={s.dropPrice}>{Number(p.pro_price).toLocaleString()}</span>
@@ -628,16 +571,7 @@ export default function EditOrderPage() {
                 ) : (
                   details.map((d, i) => (
                     <tr key={d.pro_id} className="trow">
-                      <td 
-                      onClick={() => {
-                                                    const product = products.find(p => p.pro_id === d.pro_id);
-                                                    if (product?.pro_img) {
-                                                        setPreviewImage(product.pro_img);
-                                                    }
-                                                }}
-                      style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>
-                        {d.pro_name}
-                        </td>
+                      <td style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>{d.pro_name}</td>
                       <td style={{ ...s.td, textAlign: "center" }}>
                         {editingPriceIndex === i ? (
                           <input
@@ -781,20 +715,11 @@ export default function EditOrderPage() {
               )}
             </div>
             <div style={s.productGrid}>
-
-
-
-
-              {/* ══ PRODUCt all when click all product ══ */}
-
-
-
-
               {modalFiltered.length === 0 ? (
                 <div style={s.noResult}><p style={{ color: "#9ca3af", fontSize: 13, margin: 0 }}>لا توجد نتائج</p></div>
               ) : (
                 modalFiltered.map((p) => {
-                  const inCart = details.find((d) => String(d.pro_id) === String(p.pro_id));
+                  const inCart = details.find((d) =>  String(d.pro_id) === String(p.pro_id));
                   return (
                     <div
                       key={p.pro_id}
@@ -802,54 +727,50 @@ export default function EditOrderPage() {
                       style={inCart ? { ...s.productCard, ...s.productCardActive } : s.productCard}
                       className="product-card"
                     >
-                      <div
-                        style={{
-                          ...s.productIcon,
-                          background: inCart ? "#dbeafe" : "#f3f4f6",
-                          overflow: "hidden",
-                          width: 180,
-                          height: 180,
-                          borderRadius: 12,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}>
-                        {p.pro_img ? (
-                          <img
-                            src={p.pro_img}
-                            alt={p.pro_name}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPreviewImage(p.pro_img);
-                            }}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              cursor: "zoom-in",
-                            }}
-                          />
-                        ) : (
-                          <div
-
-                          >
-                            <svg
-                              width="40"
-                              height="40"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke={inCart ? "#2563eb" : "#9ca3af"}
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                            >
-                              <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-                              <polyline points="16 3 12 7 8 3" />
-                            </svg>
-                          </div>
-                        )}
+                      <div style={{ ...s.productIcon, background: inCart ? "#dbeafe" : "#f3f4f6" }}>
+                         {p.pro_img ? (
+                                                            <img
+                                                                src={p.pro_img}
+                                                                alt={p.pro_name}
+                                                                style={{
+                                                                    width: 38,
+                                                                    height: 38,
+                                                                    borderRadius: 8,
+                                                                    objectFit: "cover",
+                                                                    flexShrink: 0,
+                                                                    border: "1px solid #e5e7eb",
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <div
+                                                                style={{
+                                                                    width: 38,
+                                                                    height: 38,
+                                                                    borderRadius: 8,
+                                                                    background: "#f3f4f6",
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    justifyContent: "center",
+                                                                    flexShrink: 0,
+                                                                }}
+                                                            >
+                                                                <svg
+                                                                    width="16"
+                                                                    height="16"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="#9ca3af"
+                                                                    strokeWidth="1.5"
+                                                                    strokeLinecap="round"
+                                                                >
+                                                                    <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                                                                    <polyline points="16 3 12 7 8 3" />
+                                                                </svg>
+                                                            </div>
+                                                        )}
                       </div>
                       <p style={{ ...s.productName, color: inCart ? "#1d4ed8" : "#111827" }}>{p.pro_name}</p>
-
+                      
 
 
 
@@ -858,7 +779,7 @@ export default function EditOrderPage() {
                       {inCart && <div style={s.inCartPill}>✓ في السلة ({inCart.ord_qt})</div>}
 
 
-
+                      
                     </div>
                   );
                 })
@@ -867,74 +788,6 @@ export default function EditOrderPage() {
           </div>
         </div>
       )}
-
-
-      {/* ══ Show image in big size or zoom images ══ */}
-
-
-      {previewImage && (
-        <div
-          onClick={() => setPreviewImage(null)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            padding: 20,
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              position: "relative",
-            }}
-          >
-            {/* Close Button */}
-            <button
-              onClick={() => setPreviewImage(null)}
-              style={{
-                position: "absolute",
-                top: -15,
-                right: -15,
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                border: "none",
-                background: "#ef4444",
-                color: "#fff",
-                fontSize: 24,
-                cursor: "pointer",
-                fontWeight: "bold",
-                zIndex: 10000,
-              }}
-            >
-              ×
-            </button>
-
-            <img
-              src={previewImage}
-              alt="Preview"
-              style={{
-                maxWidth: "90vw",
-                maxHeight: "90vh",
-                borderRadius: 12,
-                objectFit: "contain",
-                background: "#fff",
-                display: "block",
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-
-
-
-
-
     </div>
   );
 }
@@ -1025,13 +878,10 @@ const s: Record<string, React.CSSProperties> = {
   modalSearchIcon: { position: "absolute" as const, right: 34, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" as const },
   modalInput: { width: "100%", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 9, padding: "10px 36px", fontSize: 13, color: "#111827", outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" },
   clearBtn: { position: "absolute" as const, left: 34, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 12, padding: "2px 5px" },
-  productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8, flex: 1 },
-  productCard: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "10px", cursor: "pointer", transition: "all 0.18s", flexDirection: "column" as const, gap: 4
-  },
+  productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(148px, 1fr))", gap: 8, flex: 1 },
+  productCard: { background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "13px 12px", cursor: "pointer", transition: "all 0.18s", display: "flex", flexDirection: "column" as const, gap: 4 },
   productCardActive: { background: "#eff6ff", border: "1.5px solid #93c5fd" },
-  productIcon: { width: 200, height: 200, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
+  productIcon: { width: 34, height: 34, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
   productName: { fontSize: 12, fontWeight: 700, margin: 0, lineHeight: 1.4 },
   productPrice: { fontSize: 11, color: "#6b7280", margin: 0 },
   inCartPill: { background: "#1d4ed8", color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 20, alignSelf: "flex-start" as const, marginTop: 2 },

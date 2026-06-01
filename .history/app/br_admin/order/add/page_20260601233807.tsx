@@ -836,12 +836,7 @@ export default function AddOrderPage() {
                                         <tr key={d.pro_id} className="trow">
                                             {/* PRODUCT */}
                                             <td
-                                                onClick={() => {
-                                                    const product = products.find(p => p.pro_id === d.pro_id);
-                                                    if (product?.pro_img) {
-                                                        setPreviewImage(product.pro_img);
-                                                    }
-                                                }}
+                                                onClick={() => console.log("CLICK", d.pro_img)}
                                                 style={{ cursor: "pointer", fontWeight: 600 }}
                                             >
                                                 {d.pro_name}

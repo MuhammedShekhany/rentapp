@@ -84,7 +84,6 @@ export async function GET(req: Request, { params }: Params) {
       SELECT
         od.pro_id,
         p.pro_name,
-        p.pro_img,
         od.ord_qt,
         od.ord_price,
         od.ord_total

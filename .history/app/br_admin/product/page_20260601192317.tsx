@@ -259,9 +259,7 @@ export default function ProductPage() {
                             alt={item.pro_name}
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (item.pro_img) {
-    setPreviewImage(item.pro_img);
-  }
+                              setPreviewImage(item.pro_img);
                             }}
                             style={{
                               width: 100,

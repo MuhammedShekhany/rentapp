@@ -519,10 +519,6 @@ export default function EditOrderPage() {
               {inlineSearch && (
                 <button onClick={() => { setInlineSearch(""); setShowInlineList(false); }} style={s.clearX}>✕</button>
               )}
-
-
-
-              {/* add item from search bar */}
               {showInlineList && (
                 <div style={s.dropdown}>
                   {inlineFiltered.length === 0 ? (
@@ -537,59 +533,7 @@ export default function EditOrderPage() {
                           style={inCart ? { ...s.dropItem, background: "#f0fdf4" } : s.dropItem}
                           className="drop-item"
                         >
-
-                          {/* in search product */}
-                          {p.pro_img ? (
-                            <img
-                              src={p.pro_img}
-                              alt={p.pro_name}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewImage(p.pro_img);
-                              }}
-                              style={{
-                                width: 100,
-                                height: 100,
-                                borderRadius: 8,
-                                objectFit: "cover",
-                                flexShrink: 0,
-                                border: "1px solid #e5e7eb",
-                                cursor: "zoom-in",
-                              }}
-                            />
-                          ) : (
-                            <div
-                              style={{
-                                width: 100,
-                                height: 100,
-                                borderRadius: 8,
-                                background: "#f3f4f6",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flexShrink: 0,
-                              }}
-                            >
-                              <svg
-                                width="400"
-                                height="400"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="#9ca3af"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                              >
-                                <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-                                <polyline points="16 3 12 7 8 3" />
-                              </svg>
-                            </div>
-                          )}
-
-
-
                           <span style={s.dropName}>{p.pro_name}</span>
-
-
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             {inCart && <span style={s.inCartTag}>× {inCart.ord_qt}</span>}
                             <span style={s.dropPrice}>{Number(p.pro_price).toLocaleString()}</span>
@@ -628,16 +572,7 @@ export default function EditOrderPage() {
                 ) : (
                   details.map((d, i) => (
                     <tr key={d.pro_id} className="trow">
-                      <td 
-                      onClick={() => {
-                                                    const product = products.find(p => p.pro_id === d.pro_id);
-                                                    if (product?.pro_img) {
-                                                        setPreviewImage(product.pro_img);
-                                                    }
-                                                }}
-                      style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>
-                        {d.pro_name}
-                        </td>
+                      <td style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>{d.pro_name}</td>
                       <td style={{ ...s.td, textAlign: "center" }}>
                         {editingPriceIndex === i ? (
                           <input
@@ -781,15 +716,6 @@ export default function EditOrderPage() {
               )}
             </div>
             <div style={s.productGrid}>
-
-
-
-
-              {/* ══ PRODUCt all when click all product ══ */}
-
-
-
-
               {modalFiltered.length === 0 ? (
                 <div style={s.noResult}><p style={{ color: "#9ca3af", fontSize: 13, margin: 0 }}>لا توجد نتائج</p></div>
               ) : (
@@ -802,18 +728,7 @@ export default function EditOrderPage() {
                       style={inCart ? { ...s.productCard, ...s.productCardActive } : s.productCard}
                       className="product-card"
                     >
-                      <div
-                        style={{
-                          ...s.productIcon,
-                          background: inCart ? "#dbeafe" : "#f3f4f6",
-                          overflow: "hidden",
-                          width: 180,
-                          height: 180,
-                          borderRadius: 12,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}>
+                      <div style={{ ...s.productIcon, background: inCart ? "#dbeafe" : "#f3f4f6" }}>
                         {p.pro_img ? (
                           <img
                             src={p.pro_img}
@@ -823,22 +738,34 @@ export default function EditOrderPage() {
                               setPreviewImage(p.pro_img);
                             }}
                             style={{
-                              width: "100%",
-                              height: "100%",
+                              width: 100,
+                              height: 100,
+                              borderRadius: 8,
                               objectFit: "cover",
+                              flexShrink: 0,
+                              border: "1px solid #e5e7eb",
                               cursor: "zoom-in",
                             }}
                           />
                         ) : (
                           <div
-
+                            style={{
+                              width: 38,
+                              height: 38,
+                              borderRadius: 8,
+                              background: "#f3f4f6",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: 0,
+                            }}
                           >
                             <svg
-                              width="40"
-                              height="40"
+                              width="16"
+                              height="16"
                               viewBox="0 0 24 24"
                               fill="none"
-                              stroke={inCart ? "#2563eb" : "#9ca3af"}
+                              stroke="#9ca3af"
                               strokeWidth="1.5"
                               strokeLinecap="round"
                             >
@@ -867,9 +794,6 @@ export default function EditOrderPage() {
           </div>
         </div>
       )}
-
-
-      {/* ══ Show image in big size or zoom images ══ */}
 
 
       {previewImage && (
@@ -1025,13 +949,10 @@ const s: Record<string, React.CSSProperties> = {
   modalSearchIcon: { position: "absolute" as const, right: 34, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" as const },
   modalInput: { width: "100%", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 9, padding: "10px 36px", fontSize: 13, color: "#111827", outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" },
   clearBtn: { position: "absolute" as const, left: 34, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 12, padding: "2px 5px" },
-  productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8, flex: 1 },
-  productCard: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "10px", cursor: "pointer", transition: "all 0.18s", flexDirection: "column" as const, gap: 4
-  },
+  productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(148px, 1fr))", gap: 8, flex: 1 },
+  productCard: { background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "13px 12px", cursor: "pointer", transition: "all 0.18s", display: "flex", flexDirection: "column" as const, gap: 4 },
   productCardActive: { background: "#eff6ff", border: "1.5px solid #93c5fd" },
-  productIcon: { width: 200, height: 200, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
+  productIcon: { width: 34, height: 34, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
   productName: { fontSize: 12, fontWeight: 700, margin: 0, lineHeight: 1.4 },
   productPrice: { fontSize: 11, color: "#6b7280", margin: 0 },
   inCartPill: { background: "#1d4ed8", color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 20, alignSelf: "flex-start" as const, marginTop: 2 },

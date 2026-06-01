@@ -43,8 +43,6 @@ export default function ProductPage() {
 
   const [search, setSearch] = useState(""); // 🔥 SEARCH
 
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-
   // =========================
   // USER SESSION
   // =========================
@@ -68,8 +66,8 @@ export default function ProductPage() {
     return user.user_role === "br_admin"
       ? "/br_admin"
       : user.user_role === "br_ass"
-        ? "/br_ass"
-        : "/br_user";
+      ? "/br_ass"
+      : "/br_user";
   }, [user]);
 
   // =========================
@@ -78,11 +76,11 @@ export default function ProductPage() {
   const loadProducts = async (br_id: string) => {
     try {
       setLoading(true);
+      
 
-
-      const res = await fetch(`/api/product?br_id=${user?.br_id}`, {
-        cache: "no-store",
-      });
+     const res = await fetch(`/api/product?br_id=${user?.br_id}`, {
+  cache: "no-store",
+});
 
       const data = await res.json();
 
@@ -169,14 +167,14 @@ export default function ProductPage() {
                 onClick={() =>
                   router.push("/br_admin/product/add")
                 }
-                className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl transition-colors duration-200"
+                 className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl transition-colors duration-200"
               >
                 + إضافة منتج
               </button>
 
               <button
                 onClick={() => router.push(`${basePath}`)}
-                className="bg-gray-200 hover:bg-gray-300 px-6 py-3 rounded-xl"
+                 className="bg-gray-200 hover:bg-gray-300 px-6 py-3 rounded-xl"
               >
                 ← الرجوع
               </button>
@@ -186,32 +184,32 @@ export default function ProductPage() {
 
           <div className="bg-white p-4 rounded-xl shadow mb-4 flex flex-col md:flex-row md:items-center gap-3">
 
-            {/* SEARCH */}
-            <div className="relative w-full">
+  {/* SEARCH */}
+  <div className="relative w-full">
 
-              {/* ICON */}
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                🔍
-              </div>
+    {/* ICON */}
+    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+      🔍
+    </div>
 
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="ابحث باسم المنتج أو التصنيف..."
-                className="border p-2 pl-9 rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-500"
-              />
+    <input
+      type="text"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      placeholder="ابحث باسم المنتج أو التصنيف..."
+      className="border p-2 pl-9 rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-500"
+    />
 
-            </div>
+  </div>
 
-            {/* COUNT BADGE */}
-            <div className="inline-flex items-center bg-black text-white rounded-full px-3 py-1 whitespace-nowrap">
-              <span className="text-xs font-semibold">
-                {filteredProducts.length} منتجات
-              </span>
-            </div>
+  {/* COUNT BADGE */}
+  <div className="inline-flex items-center bg-black text-white rounded-full px-3 py-1 whitespace-nowrap">
+    <span className="text-xs font-semibold">
+      {filteredProducts.length} منتجات
+    </span>
+  </div>
 
-          </div>
+</div>
 
           {/* CONTENT */}
           {loading ? (
@@ -257,23 +255,8 @@ export default function ProductPage() {
                           <img
                             src={item.pro_img}
                             alt={item.pro_name}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (item.pro_img) {
-    setPreviewImage(item.pro_img);
-  }
-                            }}
-                            style={{
-                              width: 100,
-                              height: 100,
-                              borderRadius: 8,
-                              objectFit: "cover",
-                              flexShrink: 0,
-                              border: "1px solid #e5e7eb",
-                              cursor: "zoom-in",
-                            }}
                             className="w-35 h-35 object-cover rounded-xl border"
-
+                            
                           />
                         ) : (
                           <div className="text-slate-400">
@@ -314,7 +297,7 @@ export default function ProductPage() {
                             }
                             className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition"
                           >
-                            تحديث
+                           تحديث
                           </button>
 
                           <button
@@ -343,68 +326,6 @@ export default function ProductPage() {
 
         </div>
       </div>
-      {
-    previewImage && (
-      <div
-        onClick={() => setPreviewImage(null)}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.8)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999,
-          padding: 20,
-        }}
-      >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            position: "relative",
-          }}
-        >
-          {/* Close Button */}
-          <button
-            onClick={() => setPreviewImage(null)}
-            style={{
-              position: "absolute",
-              top: -15,
-              right: -15,
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              border: "none",
-              background: "#ef4444",
-              color: "#fff",
-              fontSize: 24,
-              cursor: "pointer",
-              fontWeight: "bold",
-              zIndex: 10000,
-            }}
-          >
-            ×
-          </button>
-
-          <img
-            src={previewImage}
-            alt="Preview"
-            style={{
-              maxWidth: "90vw",
-              maxHeight: "90vh",
-              borderRadius: 12,
-              objectFit: "contain",
-              background: "#fff",
-              display: "block",
-            }}
-          />
-        </div>
-      </div>
-    )
-  }
     </div>
-    
   );
-
-  
 }

@@ -155,7 +155,6 @@ const handleUpload = async (file: File) => {
   } catch (error) {
     console.error(error);
     throw new Error("Upload failed");
-
   }
 };
 
