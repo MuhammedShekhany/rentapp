@@ -64,19 +64,19 @@ export default function EditOrderPage() {
 
 
 
-  const formatIraqPhone = (value: string) => {
-    const digits = value.replace(/\D/g, ""); // remove non-numbers
+   const formatIraqPhone = (value: string) => {
+        const digits = value.replace(/\D/g, ""); // remove non-numbers
 
-    const part1 = digits.slice(0, 4);
-    const part2 = digits.slice(4, 7);
-    const part3 = digits.slice(7, 11);
+        const part1 = digits.slice(0, 4);
+        const part2 = digits.slice(4, 7);
+        const part3 = digits.slice(7, 11);
 
-    let result = part1;
-    if (part2) result += "-" + part2;
-    if (part3) result += "-" + part3;
+        let result = part1;
+        if (part2) result += "-" + part2;
+        if (part3) result += "-" + part3;
 
-    return result;
-  };
+        return result;
+    };
 
   const updatePrice = (index: number, value: number) => {
     const price = Math.max(0, value || 0);
@@ -446,8 +446,8 @@ export default function EditOrderPage() {
                     <span style={s.cusKey}>الهاتف 1 :</span>
                     <input
                       placeholder="07xx-xxx-xxxx"
-                      value={formatIraqPhone(or_cus_phone)}
-                      onChange={(e) => setOrCusPhone(e.target.value.replace(/\D/g, ""))}
+                      value={or_cus_phone}
+                      onChange={(e) => setOrCusPhone(e.target.value)}
                       style={s.receiptInput}
                       className="rinp"
                     />
@@ -456,8 +456,8 @@ export default function EditOrderPage() {
                     <span style={s.cusKey}>الهاتف 2 :</span>
                     <input
                       placeholder="07xx-xxx-xxxx"
-                      value={formatIraqPhone(or_cus_phone2)}
-                      onChange={(e) => setOrCusPhone2(e.target.value.replace(/\D/g, ""))}
+                      value={or_cus_phone2}
+                      onChange={(e) => setOrCusPhone2(e.target.value)}
                       style={s.receiptInput}
                       className="rinp"
                     />
@@ -644,16 +644,16 @@ export default function EditOrderPage() {
                 ) : (
                   details.map((d, i) => (
                     <tr key={d.pro_id} className="trow">
-                      <td
-                        onClick={() => {
-                          const product = products.find(p => p.pro_id === d.pro_id);
-                          if (product?.pro_img) {
-                            setPreviewImage(product.pro_img);
-                          }
-                        }}
-                        style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>
+                      <td 
+                      onClick={() => {
+                                                    const product = products.find(p => p.pro_id === d.pro_id);
+                                                    if (product?.pro_img) {
+                                                        setPreviewImage(product.pro_img);
+                                                    }
+                                                }}
+                      style={{ ...s.td, textAlign: "right", fontWeight: 600 }}>
                         {d.pro_name}
-                      </td>
+                        </td>
                       <td style={{ ...s.td, textAlign: "center" }}>
                         {editingPriceIndex === i ? (
                           <input
