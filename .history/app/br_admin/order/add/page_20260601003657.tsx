@@ -143,48 +143,48 @@ export default function AddOrderPage() {
         );
     }, [modalSearch, products]);
 
-    const addProduct = (product: ProductType, fromModal = false) => {
-        setDetails((prev) => {
-            // 1. Check if product already exists in the cart (details)
-            const existingIndex = prev.findIndex((d) => d.pro_id === product.pro_id);
+  const addProduct = (product: ProductType, fromModal = false) => {
+    setDetails((prev) => {
+        // 1. Check if product already exists in the cart (details)
+        const existingIndex = prev.findIndex((d) => d.pro_id === product.pro_id);
 
-            if (existingIndex > -1) {
-                // 2. If it exists, create a new array with the updated item
-                return prev.map((item, index) => {
-                    if (index === existingIndex) {
-                        const newQty = item.ord_qt + 1;
-                        return {
-                            ...item,
-                            ord_qt: newQty,
-                            ord_total: newQty * item.ord_price, // Recalculate total based on current price
-                        };
-                    }
-                    return item;
-                });
-            }
-
-            // 3. If it doesn't exist, add it as a new entry
-            return [
-                ...prev,
-                {
-                    pro_id: product.pro_id,
-                    pro_name: product.pro_name,
-                    ord_qt: 1,
-                    ord_price: Number(product.pro_price),
-                    ord_total: Number(product.pro_price),
-                },
-            ];
-        });
-
-        // Handle UI cleanup
-        if (fromModal) {
-            setShowModal(false);
-            setModalSearch("");
-        } else {
-            setInlineSearch("");
-            setShowInlineList(false);
+        if (existingIndex > -1) {
+            // 2. If it exists, create a new array with the updated item
+            return prev.map((item, index) => {
+                if (index === existingIndex) {
+                    const newQty = item.ord_qt + 1;
+                    return {
+                        ...item,
+                        ord_qt: newQty,
+                        ord_total: newQty * item.ord_price, // Recalculate total based on current price
+                    };
+                }
+                return item;
+            });
         }
-    };
+
+        // 3. If it doesn't exist, add it as a new entry
+        return [
+            ...prev,
+            {
+                pro_id: product.pro_id,
+                pro_name: product.pro_name,
+                ord_qt: 1,
+                ord_price: Number(product.pro_price),
+                ord_total: Number(product.pro_price),
+            },
+        ];
+    });
+
+    // Handle UI cleanup
+    if (fromModal) {
+        setShowModal(false);
+        setModalSearch("");
+    } else {
+        setInlineSearch("");
+        setShowInlineList(false);
+    }
+};
 
 
 
@@ -663,7 +663,7 @@ export default function AddOrderPage() {
                                     ✕
                                 </button>
                             )}
-
+                            
 
 
 
@@ -836,28 +836,28 @@ export default function AddOrderPage() {
                                             <td style={{ ...s.td, textAlign: "center" }}>
                                                 {editingPriceIndex === i ? (
                                                     <input
-                                                        type="text"
-                                                        inputMode="numeric"
-                                                        value={Number(d.ord_price).toLocaleString()}
-                                                        autoFocus
-                                                        onChange={(e) => {
-                                                            const raw = e.target.value.replace(/,/g, "").replace(/[^0-9]/g, "");
-                                                            updatePrice(i, Number(raw));
-                                                        }}
-                                                        onBlur={() => setEditingPriceIndex(null)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter") {
-                                                                setEditingPriceIndex(null);
-                                                            }
-                                                        }}
-                                                        style={{
-                                                            width: 80,
-                                                            padding: "4px",
-                                                            border: "1px solid #d1d5db",
-                                                            borderRadius: 6,
-                                                            textAlign: "center",
-                                                        }}
-                                                    />
+    type="text"
+    inputMode="numeric"
+    value={Number(d.ord_price).toLocaleString()}
+    autoFocus
+    onChange={(e) => {
+        const raw = e.target.value.replace(/,/g, "").replace(/[^0-9]/g, "");
+        updatePrice(i, Number(raw));
+    }}
+    onBlur={() => setEditingPriceIndex(null)}
+    onKeyDown={(e) => {
+        if (e.key === "Enter") {
+            setEditingPriceIndex(null);
+        }
+    }}
+    style={{
+        width: 80,
+        padding: "4px",
+        border: "1px solid #d1d5db",
+        borderRadius: 6,
+        textAlign: "center",
+    }}
+/>
                                                 ) : (
                                                     <span
                                                         onClick={() => setEditingPriceIndex(i)}
@@ -1028,11 +1028,7 @@ export default function AddOrderPage() {
                                         <div
                                             key={p.pro_id}
                                             onClick={() => addProduct(p, true)}
-                                            style={
-                                                inCart
-                                                    ? { ...s.productCard, ...s.productCardActive }
-                                                    : s.productCard
-                                            }
+                                            style={inCart ? { ...s.productCard, ...s.productCardActive } : s.productCard}
                                             className="product-card"
                                         >
                                             <div
@@ -1040,12 +1036,6 @@ export default function AddOrderPage() {
                                                     ...s.productIcon,
                                                     background: inCart ? "#dbeafe" : "#f3f4f6",
                                                     overflow: "hidden",
-                                                    width: 180,
-                                                    height: 180,
-                                                    borderRadius: 12,
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
                                                 }}
                                             >
                                                 {p.pro_img ? (
@@ -1053,15 +1043,16 @@ export default function AddOrderPage() {
                                                         src={p.pro_img}
                                                         alt={p.pro_name}
                                                         style={{
-                                                            width: "100%",
-                                                            height: "100%",
+                                                            width: 100,
+                                                            height: 100,
                                                             objectFit: "cover",
+                                                            borderRadius: "10px",
                                                         }}
                                                     />
                                                 ) : (
                                                     <svg
-                                                        width="40"
-                                                        height="40"
+                                                        width="17"
+                                                        height="17"
                                                         viewBox="0 0 24 24"
                                                         fill="none"
                                                         stroke={inCart ? "#2563eb" : "#9ca3af"}
@@ -1074,13 +1065,7 @@ export default function AddOrderPage() {
                                                 )}
                                             </div>
 
-                                            <p
-                                                style={{
-                                                    ...s.productName,
-                                                    color: inCart ? "#1d4ed8" : "#111827",
-                                                    marginTop: 8,
-                                                }}
-                                            >
+                                            <p style={{ ...s.productName, color: inCart ? "#1d4ed8" : "#111827" }}>
                                                 {p.pro_name}
                                             </p>
 
@@ -1220,13 +1205,10 @@ const s: Record<string, React.CSSProperties> = {
     modalSearchIcon: { position: "absolute" as const, right: 34, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" as const },
     modalInput: { width: "100%", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 9, padding: "10px 36px", fontSize: 13, color: "#111827", outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" },
     clearBtn: { position: "absolute" as const, left: 34, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 12, padding: "2px 5px" },
-    productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8, flex: 1 },
-    productCard: {
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "10px", cursor: "pointer", transition: "all 0.18s", flexDirection: "column" as const, gap: 4
-    },
+    productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(148px, 1fr))", gap: 8, flex: 1 },
+    productCard: { background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "13px 12px", cursor: "pointer", transition: "all 0.18s", display: "flex", flexDirection: "column" as const, gap: 4 },
     productCardActive: { background: "#eff6ff", border: "1.5px solid #93c5fd" },
-    productIcon: { width: 200, height: 200, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
+    productIcon: { width: 100, height: 100, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
     productName: { fontSize: 12, fontWeight: 700, margin: 0, lineHeight: 1.4 },
     productPrice: { fontSize: 11, color: "#6b7280", margin: 0 },
     inCartPill: { background: "#1d4ed8", color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 20, alignSelf: "flex-start" as const, marginTop: 2 },

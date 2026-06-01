@@ -255,7 +255,7 @@ export default function ProductPage() {
                           <img
                             src={item.pro_img}
                             alt={item.pro_name}
-                            className="w-30 h-30 object-cover rounded-xl border"
+                            className="w-40 h-40 object-cover rounded-xl border"
                             
                           />
                         ) : (

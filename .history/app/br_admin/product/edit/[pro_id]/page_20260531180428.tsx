@@ -259,7 +259,7 @@ useEffect(() => {
             <div className="flex flex-col items-center gap-3">
 
               <div
-                className="w-30 h-30 border rounded-full overflow-hidden cursor-pointer flex items-center justify-center"
+                className="w-28 h-28 border rounded-full overflow-hidden cursor-pointer flex items-center justify-center"
                 onClick={() =>
                   document.getElementById("imgInput")?.click()
                 }

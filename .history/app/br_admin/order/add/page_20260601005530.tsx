@@ -1221,12 +1221,10 @@ const s: Record<string, React.CSSProperties> = {
     modalInput: { width: "100%", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 9, padding: "10px 36px", fontSize: 13, color: "#111827", outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" },
     clearBtn: { position: "absolute" as const, left: 34, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 12, padding: "2px 5px" },
     productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8, flex: 1 },
-    productCard: {
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "10px", cursor: "pointer", transition: "all 0.18s", flexDirection: "column" as const, gap: 4
-    },
+    productCard: { display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "10px", cursor: "pointer", transition: "all 0.18s", flexDirection: "column" as const, gap: 12 },
     productCardActive: { background: "#eff6ff", border: "1.5px solid #93c5fd" },
-    productIcon: { width: 200, height: 200, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
+    productIcon: { width: 150, height: 150, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
     productName: { fontSize: 12, fontWeight: 700, margin: 0, lineHeight: 1.4 },
     productPrice: { fontSize: 11, color: "#6b7280", margin: 0 },
     inCartPill: { background: "#1d4ed8", color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 20, alignSelf: "flex-start" as const, marginTop: 2 },

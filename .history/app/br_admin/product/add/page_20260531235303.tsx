@@ -270,7 +270,7 @@ export default function AddProductPage() {
 
               {/* الصورة */}
               <div
-                className="w-30 h-30 border rounded-full overflow-hidden cursor-pointer flex items-center justify-center text-center"
+                className="w-50 h-50 border rounded-full overflow-hidden cursor-pointer flex items-center justify-center text-center"
                 onClick={() =>
                   document
                     .getElementById("productImg")

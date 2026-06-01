@@ -1223,7 +1223,7 @@ const s: Record<string, React.CSSProperties> = {
     productGrid: { overflowY: "auto" as const, padding: "4px 20px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8, flex: 1 },
     productCard: {
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "10px", cursor: "pointer", transition: "all 0.18s", flexDirection: "column" as const, gap: 4
+        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "10px", cursor: "pointer", transition: "all 0.18s", flexDirection: "column" as const, gap: 12
     },
     productCardActive: { background: "#eff6ff", border: "1.5px solid #93c5fd" },
     productIcon: { width: 200, height: 200, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 },
