@@ -75,7 +75,7 @@ export async function GET(req: Request) {
       ${whereClause}
       AND o.or_delayed = 0
 
-      ORDER BY o.or_date_reserve DESC, o.or_id DESC
+      ORDER BY o.or_id DESC
       `,
       params
     );

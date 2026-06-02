@@ -134,6 +134,18 @@ export default function AddOrderPage() {
 
 
 
+    const formatDate = (dateStr:string) => {
+  if (!dateStr) return "-";
+
+  const d = new Date(dateStr);
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
+
+
     const updatePrice = (index: number, value: number) => {
         const price = Math.max(0, value || 0);
 
@@ -515,6 +527,9 @@ export default function AddOrderPage() {
                                     }}
                                 />
 
+                                <span style={{ minWidth: 90 }}>
+                                    {or_date ? formatDate(or_date) : "-"}
+                                </span>
                             </div>
 
                             {/* RESERVE DATE */}
