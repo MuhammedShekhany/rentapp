@@ -472,7 +472,7 @@ export default function OrderPage() {
 
                       <td className="p-4 max-w-[220px]">
 
-                        <div className="truncate" >
+                        <div className="truncate" style={{ whiteSpace: "pre-wrap" }}>
                           {item.or_note || "-"}
                         </div>
 

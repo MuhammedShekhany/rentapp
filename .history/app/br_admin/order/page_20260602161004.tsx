@@ -68,36 +68,36 @@ export default function OrderPage() {
   // LOAD ORDERS
   // ======================
   const loadOrders = async (selectedMonth?: string) => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    if (!user?.br_id) return;
+      if (!user?.br_id) return;
 
-    let url = `/api/order?br_id=${user.br_id}`;
+      let url = `/api/order?br_id=${user.br_id}`;
 
-    if (selectedMonth) {
-      url += `&month=${selectedMonth}`;
-    }
+      if (selectedMonth) {
+        url += `&month=${selectedMonth}`;
+      }
 
-    const res = await fetch(url, {
-      cache: "no-store",
-    });
+      const res = await fetch(url, {
+        cache: "no-store",
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data?.success && Array.isArray(data.orders)) {
-      setOrders(data.orders);
-    } else {
+      if (data?.success && Array.isArray(data.orders)) {
+        setOrders(data.orders);
+      } else {
+        setOrders([]);
+      }
+
+    } catch (error) {
+      console.error(error);
       setOrders([]);
+    } finally {
+      setLoading(false);
     }
-
-  } catch (error) {
-    console.error(error);
-    setOrders([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
 
@@ -105,27 +105,27 @@ export default function OrderPage() {
   // FIRST LOAD
   // ======================
   useEffect(() => {
-  const session = localStorage.getItem("userSession");
+    const session = localStorage.getItem("userSession");
 
-  if (!session) {
-    router.replace("/login");
-    return;
-  }
+    if (!session) {
+      router.replace("/login");
+      return;
+    }
 
-  const parsedUser: UserType = JSON.parse(session);
+    const parsedUser: UserType = JSON.parse(session);
 
-  setUser(parsedUser);
+    setUser(parsedUser);
 
-  const now = new Date();
+    const now = new Date();
 
-  const currentMonth = now.toISOString().slice(0, 7);
+    const currentMonth = now.toISOString().slice(0, 7);
 
-  setMonth(currentMonth);
+    setMonth(currentMonth);
 
-  // ❌ REMOVE THIS LINE
-  // loadOrders(currentMonth);
+    // ❌ REMOVE THIS LINE
+    // loadOrders(currentMonth);
 
-}, [router]);
+  }, [router]);
 
 
 
@@ -144,10 +144,10 @@ export default function OrderPage() {
   // RELOAD ON MONTH CHANGE
   // ======================
   useEffect(() => {
-  if (user?.br_id && month) {
-    loadOrders(month);
-  }
-}, [user, month]);
+    if (user?.br_id && month) {
+      loadOrders(month);
+    }
+  }, [user, month]);
 
   // ======================
   // SCROLL BUTTON
@@ -386,7 +386,7 @@ export default function OrderPage() {
                     <th className="p-4">تاريخ الحجز </th>
                     <th className="p-4">تاريخ استرجاع </th>
                     <th className="p-4">تاريخ التحضير </th>
-                    
+
                     <th className="p-4">التأمين</th>
 
                     <th className="p-4">الملاحظة</th>
@@ -464,7 +464,7 @@ export default function OrderPage() {
                           : "-"}
 
                       </td>
-                      
+
 
                       <td className="p-4">
                         {item.tamin || "-"}
@@ -472,7 +472,13 @@ export default function OrderPage() {
 
                       <td className="p-4 max-w-[220px]">
 
-                        <div className="truncate" >
+                        <div
+                          style={{
+                            whiteSpace: "pre-wrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
                           {item.or_note || "-"}
                         </div>
 

@@ -145,7 +145,6 @@ export default function EditOrderPage() {
             const cleanDate2 = prepDate.toLocaleDateString('en-CA');
 
             setReceiptDate(cleanDate2);
-            
             console.log("or_date_reserve");
             console.log(cleanDate);
             console.log("or_date_prepDate");

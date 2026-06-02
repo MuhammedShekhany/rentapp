@@ -77,7 +77,7 @@ export default function PrintOrderPage() {
     const [branch, setBranch] = useState<BranchType | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const router = useRouter();
+      const router = useRouter();
 
     // ── FETCH ──
     useEffect(() => {
@@ -122,9 +122,9 @@ export default function PrintOrderPage() {
 
     // ── DERIVED ──
     // ── DERIVED ──
-    const totalPaid = Number((order as any)?.paid_total ?? 0);
+const totalPaid = Number((order as any)?.paid_total ?? 0);
 
-    const remaining = Number((order as any)?.remaining ?? 0);
+const remaining = Number((order as any)?.remaining ?? 0);
     // ── STATES ──
     if (loading)
         return (
@@ -206,7 +206,7 @@ export default function PrintOrderPage() {
 
                         <div className="info-row underline-dash">
                             <span className="ikey">السيد :  {order.or_cus_name || "—"}</span>
-
+                            
                         </div>
                         {order.or_cus_phone && (
                             <div className="info-row">
@@ -252,10 +252,10 @@ export default function PrintOrderPage() {
 
                 </div>
 
-
+        
 
                 {/* ORDER DETAILS TABLE */}
-
+            
                 <table className="tbl">
                     <thead>
                         <tr>
@@ -285,38 +285,37 @@ export default function PrintOrderPage() {
                     </tbody>
                 </table>
 
-
+                
 
 
                 {/* NOTES */}
-                {order.or_note && (
-                    <>
+{order.or_note && (
+  <>
 
 
-                        <div
-                            style={{
-                                marginTop: "10px",
-                                border: "1px solid #020202",
-                                borderRadius: "0px",
-                                padding: "0px",
+    <div
+      style={{
+        marginTop: "10px",
+        border: "1px solid #020202",
+        borderRadius: "0px",
+        padding: "0px",
+      
+      }}
+    >
+      <div className="sec-title">ملاحظات</div>
 
-                            }}
-                        >
-                            <div className="sec-title">ملاحظات</div>
-
-                            <p
-                                className="note-txt"
-                                style={{
-                                    marginTop: "1px",
-                                    marginBottom: 0,
-                                    whiteSpace: "pre-wrap",
-                                }}
-                            >
-                                {order.or_note}
-                            </p>
-                        </div>
-                    </>
-                )}
+      <p
+        className="note-txt"
+        style={{
+          marginTop: "1px",
+          marginBottom: 0,
+        }}
+      >
+        {order.or_note}
+      </p>
+    </div>
+  </>
+)}
 
                 <div className="hr-dash" style={{ marginTop: 16 }} />
 

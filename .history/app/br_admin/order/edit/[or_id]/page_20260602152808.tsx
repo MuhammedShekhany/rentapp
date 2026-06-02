@@ -17,7 +17,7 @@ type DetailType = {
   ord_price: number;
   ord_total: number;
   pro_img?: string;
-
+  
 };
 
 
@@ -97,109 +97,81 @@ export default function EditOrderPage() {
   };
 
   useEffect(() => {
-    const session = localStorage.getItem("userSession");
-    if (!session) return router.push("/login");
-    const user = JSON.parse(session);
-    setUserId(user.user_id);
-    setBrId(user.br_id);
+  const session = localStorage.getItem("userSession");
+  if (!session) return router.push("/login");
+  const user = JSON.parse(session);
+  setUserId(user.user_id);
+  setBrId(user.br_id);
 
-    fetch(`/api/branch/${user.br_id}`)
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setBranch(d.branch); })
-      .catch(console.error);
+  fetch(`/api/branch/${user.br_id}`)
+    .then((r) => r.json())
+    .then((d) => { if (d.success) setBranch(d.branch); })
+    .catch(console.error);
 
-    const fetchAll = async () => {
-      try {
-        const [prodRes, orderRes] = await Promise.all([
-          fetch(`/api/product?br_id=${user.br_id}`),
-          fetch(`/api/order/${or_id}`),
-        ]);
+  const fetchAll = async () => {
+    try {
+      const [prodRes, orderRes] = await Promise.all([
+        fetch(`/api/product?br_id=${user.br_id}`),
+        fetch(`/api/order/${or_id}`),
+      ]);
 
-        const prodData = await prodRes.json();
-        const orderData = await orderRes.json();
+      const prodData = await prodRes.json();
+      const orderData = await orderRes.json();
 
-        if (prodData.success) setProducts(prodData.product);
+      if (prodData.success) setProducts(prodData.product);
 
-        if (orderData.success) {
-          const o = orderData.order;
-          setOrDate(o.or_date ? o.or_date.split("T")[0].split(" ")[0] : "");
-          setOrNote(o.or_note || "");
-          setOrCusName(o.or_cus_name || "");
-          setOrCusPhone(o.or_cus_phone || "");
-          setOrCusPhone2(o.or_cus_phone2 || "");
-          //setOrPrepareDate(o.or_prepare_date ? o.or_prepare_date.split("T")[0].split(" ")[0] : "");
-          //setOrDateReserve(o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "");
-          //setReceiptDate(o.or_date_reciept ? o.or_date_reciept.split("T")[0].split(" ")[0] : "");
-
-          if (o.or_date_reserve) {
-            const cleanDate = new Date(o.or_date_reserve).toLocaleDateString('en-CA');
-            setOrDateReserve(cleanDate);
-
-
-            const prepDate = new Date(o.or_date_reserve);
-
-            // 2. Add exactly 1 day to it
-            prepDate.setDate(prepDate.getDate() + 1);
-
-            // 3. Format it safely to YYYY-MM-DD
-            const cleanDate2 = prepDate.toLocaleDateString('en-CA');
-
-            setReceiptDate(cleanDate2);
-            
-            console.log("or_date_reserve");
-            console.log(cleanDate);
-            console.log("or_date_prepDate");
-             console.log(cleanDate2);
-          }
-
-
-          if (o.or_prepare_date) {
-            const cleanDate = new Date(o.or_prepare_date).toLocaleDateString('en-CA');
-            setOrPrepareDate(cleanDate);
-            console.log("or_prepare_date");
-            console.log(cleanDate);
-
-          }
-
-
-
-
-          console.log(o.or_date_reserve);
-          console.log(o.or_date_reserve.split("T")[0].split(" ")[0]);
-          //console.log(o.or_prepare_date.toLocaleDateString('en-CA'));
-
-          // const reserveVal = o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "";
-          // setOrDateReserve(reserveVal);
-          // if (reserveVal) {
-          //   const d = new Date(reserveVal);
-          //   d.setDate(d.getDate() + 1);
-          //   setReceiptDate(d.toISOString().split("T")[0]);
-          // }
-          setOrVip(o.or_vip === 1 || o.or_vip === true);
-          setDetails(
-            (orderData.details || []).map((d: any) => ({
-              pro_id: String(d.pro_id),
-              pro_name: d.pro_name,
-              ord_qt: Number(d.ord_qt),
-              ord_price: Number(d.ord_price),
-              ord_total: Number(d.ord_total),
-            }))
-          );
+      if (orderData.success) {
+        const o = orderData.order;
+        
+        // 1. تنظيف التواريخ القادمة من قاعدة البيانات بشكل آمن لتعرض داخل الـ inputs
+        setOrDate(o.or_date ? o.or_date.split("T")[0].split(" ")[0] : "");
+        setOrNote(o.or_note || "");
+        setOrCusName(o.or_cus_name || "");
+        setOrCusPhone(o.or_cus_phone || "");
+        setOrCusPhone2(o.or_cus_phone2 || "");
+        setOrPrepareDate(o.or_prepare_date ? o.or_prepare_date.split("T")[0].split(" ")[0] : "");
+        
+        const reserveVal = o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "";
+        setOrDateReserve(reserveVal);
+        
+        // 2. الحساب الآمن لتاريخ الاستلام (Receipt Date) بدون مشاكل التوقيت العالمي (UTC)
+        if (reserveVal) {
+          const [year, month, day] = reserveVal.split('-').map(Number);
+          const d = new Date(year, month - 1, day); // إنشاء التاريخ بالتوقيت المحلي لمتصفحك
+          d.setDate(d.getDate() + 1);               // إضافة يوم واحد
+          setReceiptDate(d.toLocaleDateString('en-CA')); // حفظ النتيجة بصيغة YYYY-MM-DD بشكل مستقر
         } else {
-          alert("تعذر تحميل بيانات الطلب");
-          router.push("/br_admin/order");
+          setReceiptDate("");
         }
-      } catch (err) {
-        console.error(err);
-        alert("خطأ في تحميل البيانات");
-        router.push("/br_admin/order");
-      } finally {
-        setPageLoading(false);
-      }
-    };
 
-    if (or_id) fetchAll();
-  }, [or_id, router]);
+        setOrVip(o.or_vip === 1 || o.or_vip === true);
+        setDetails(
+          (orderData.details || []).map((d: any) => ({
+            pro_id: String(d.pro_id),
+            pro_name: d.pro_name,
+            ord_qt: Number(d.ord_qt),
+            ord_price: Number(d.ord_price),
+            ord_total: Number(d.ord_total),
+          }))
+        );
+      } else {
+        alert("تعذر تحميل بيانات الطلب");
+        router.push("/br_admin/order");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("خطأ في تحميل البيانات");
+      router.push("/br_admin/order");
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
+  if (or_id) fetchAll();
+}, [or_id, router]);
+
+
+
 
 
   useEffect(() => {
@@ -538,9 +510,9 @@ export default function EditOrderPage() {
                 <label style={{ ...s.extraLabel, fontSize: 11, whiteSpace: "nowrap", minWidth: 80 }}>تاريخ الحجز</label>
                 <input
                   type="date" value={or_date_reserve}
-
+                  
                   onChange={(e) => {
-                    console.log(e.target.value);
+                    console.log( e.target.value);
                     const val = e.target.value;
                     setOrDateReserve(val);
                     if (val) {
@@ -712,12 +684,12 @@ export default function EditOrderPage() {
                     <tr key={d.pro_id} className="trow">
                       <td
                         onClick={() => {
-
-
+                          
+                         
                           const product = products.find(p => String(p.pro_id) === String(d.pro_id));
                           if (product?.pro_img) {
                             setPreviewImage(product.pro_img);
-
+                            
                           }
                           else {
                             if (!product) {

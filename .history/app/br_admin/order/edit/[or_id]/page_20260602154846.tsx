@@ -130,35 +130,17 @@ export default function EditOrderPage() {
           //setOrPrepareDate(o.or_prepare_date ? o.or_prepare_date.split("T")[0].split(" ")[0] : "");
           //setOrDateReserve(o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "");
           //setReceiptDate(o.or_date_reciept ? o.or_date_reciept.split("T")[0].split(" ")[0] : "");
-
           if (o.or_date_reserve) {
             const cleanDate = new Date(o.or_date_reserve).toLocaleDateString('en-CA');
             setOrDateReserve(cleanDate);
-
-
-            const prepDate = new Date(o.or_date_reserve);
-
-            // 2. Add exactly 1 day to it
-            prepDate.setDate(prepDate.getDate() + 1);
-
-            // 3. Format it safely to YYYY-MM-DD
-            const cleanDate2 = prepDate.toLocaleDateString('en-CA');
-
-            setReceiptDate(cleanDate2);
-            
-            console.log("or_date_reserve");
-            console.log(cleanDate);
-            console.log("or_date_prepDate");
-             console.log(cleanDate2);
           }
-
-
+          if (o.or_date_reciept) {
+            const cleanDate = new Date(o.or_date_reciept).toLocaleDateString('en-CA');
+            setReceiptDate(cleanDate);
+          }
           if (o.or_prepare_date) {
             const cleanDate = new Date(o.or_prepare_date).toLocaleDateString('en-CA');
             setOrPrepareDate(cleanDate);
-            console.log("or_prepare_date");
-            console.log(cleanDate);
-
           }
 
 

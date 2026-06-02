@@ -17,7 +17,7 @@ type DetailType = {
   ord_price: number;
   ord_total: number;
   pro_img?: string;
-
+  
 };
 
 
@@ -127,46 +127,11 @@ export default function EditOrderPage() {
           setOrCusName(o.or_cus_name || "");
           setOrCusPhone(o.or_cus_phone || "");
           setOrCusPhone2(o.or_cus_phone2 || "");
-          //setOrPrepareDate(o.or_prepare_date ? o.or_prepare_date.split("T")[0].split(" ")[0] : "");
-          //setOrDateReserve(o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "");
-          //setReceiptDate(o.or_date_reciept ? o.or_date_reciept.split("T")[0].split(" ")[0] : "");
-
-          if (o.or_date_reserve) {
-            const cleanDate = new Date(o.or_date_reserve).toLocaleDateString('en-CA');
-            setOrDateReserve(cleanDate);
-
-
-            const prepDate = new Date(o.or_date_reserve);
-
-            // 2. Add exactly 1 day to it
-            prepDate.setDate(prepDate.getDate() + 1);
-
-            // 3. Format it safely to YYYY-MM-DD
-            const cleanDate2 = prepDate.toLocaleDateString('en-CA');
-
-            setReceiptDate(cleanDate2);
-            
-            console.log("or_date_reserve");
-            console.log(cleanDate);
-            console.log("or_date_prepDate");
-             console.log(cleanDate2);
-          }
-
-
-          if (o.or_prepare_date) {
-            const cleanDate = new Date(o.or_prepare_date).toLocaleDateString('en-CA');
-            setOrPrepareDate(cleanDate);
-            console.log("or_prepare_date");
-            console.log(cleanDate);
-
-          }
-
-
-
-
-          console.log(o.or_date_reserve);
-          console.log(o.or_date_reserve.split("T")[0].split(" ")[0]);
-          //console.log(o.or_prepare_date.toLocaleDateString('en-CA'));
+          setOrPrepareDate(o.or_prepare_date ? o.or_prepare_date.toLocaleDateString('en-CA') : "");
+          setOrDateReserve(o.or_date_reserve ? o.or_date_reserve.toLocaleDateString('en-CA') : "");
+          setReceiptDate(o.or_date_reciept ? o.or_date_reciept.toLocaleDateString('en-CA') : "");
+          console.log(o.or_prepare_date);
+          console.log(o.or_prepare_date.toLocaleDateString('en-CA'));
 
           // const reserveVal = o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "";
           // setOrDateReserve(reserveVal);
@@ -201,7 +166,7 @@ export default function EditOrderPage() {
     if (or_id) fetchAll();
   }, [or_id, router]);
 
-
+  
   useEffect(() => {
     const handle = (e: MouseEvent) => {
       if (inlineRef.current && !inlineRef.current.contains(e.target as Node))
@@ -538,9 +503,9 @@ export default function EditOrderPage() {
                 <label style={{ ...s.extraLabel, fontSize: 11, whiteSpace: "nowrap", minWidth: 80 }}>تاريخ الحجز</label>
                 <input
                   type="date" value={or_date_reserve}
-
+                  
                   onChange={(e) => {
-                    console.log(e.target.value);
+                    console.log( e.target.value);
                     const val = e.target.value;
                     setOrDateReserve(val);
                     if (val) {
@@ -712,12 +677,12 @@ export default function EditOrderPage() {
                     <tr key={d.pro_id} className="trow">
                       <td
                         onClick={() => {
-
-
+                          
+                         
                           const product = products.find(p => String(p.pro_id) === String(d.pro_id));
                           if (product?.pro_img) {
                             setPreviewImage(product.pro_img);
-
+                            
                           }
                           else {
                             if (!product) {

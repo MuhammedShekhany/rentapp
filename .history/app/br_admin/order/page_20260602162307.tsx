@@ -335,12 +335,27 @@ export default function OrderPage() {
             className="border p-2 rounded-lg w-full"
           />
 
-          <input
+          {/* <input
             type="month"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
             className="border p-2 rounded-lg"
-          />
+          /> */}
+
+          <select
+  value={month}
+  onChange={(e) => setMonth(e.target.value)}
+  className="border p-2 rounded-lg w-full"
+>
+  {Array.from({ length: 12 }, (_, i) => {
+    const val = String(i + 1); // 1 - 12
+    return (
+      <option key={val} value={val}>
+        {val}
+      </option>
+    );
+  })}
+</select>
 
         </div>
 
