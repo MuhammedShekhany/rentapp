@@ -68,11 +68,11 @@ export default function EditSubscriptionPage() {
         setSubAmount(String(s.sub_amount || ""));
         setBrId(String(s.br_id || ""));
       } else {
-        setMessage(subData.message || "Subscription not found");
+        setMessage(subData.message || "لم يتم العثور على الاشتراك");
       }
     } catch (error) {
       console.error(error);
-      setMessage("Server error");
+      setMessage("خطأ في السيرفر");
     } finally {
       setPageLoading(false);
     }
@@ -82,11 +82,11 @@ export default function EditSubscriptionPage() {
     e.preventDefault();
 
     if (!subSDate || !subEDate || !subAmount || !brId) {
-      return setMessage("Fill all fields");
+      return setMessage("يرجى تعبئة جميع الحقول");
     }
 
     if (!sessionUser?.user_id) {
-      return setMessage("User session not found");
+      return setMessage("لم يتم العثور على جلسة المستخدم");
     }
 
     setLoading(true);
@@ -99,33 +99,36 @@ export default function EditSubscriptionPage() {
           sub_e_date: subEDate,
           sub_amount: subAmount,
           br_id: brId,
-          user_id: sessionUser.user_id, // auto from login
+          user_id: sessionUser.user_id,
         }),
       });
 
       const data = await res.json();
 
       if (data.success) {
-        router.push("/admin/subs");
+        router.push("/admin/sub");
       } else {
-        setMessage(data.message || "Update failed");
+        setMessage(data.message || "فشل التحديث");
       }
     } catch (error) {
       console.error(error);
-      setMessage("Server error");
+      setMessage("خطأ في السيرفر");
     } finally {
       setLoading(false);
     }
   };
 
-  if (pageLoading) return <p className="text-xl font-semibold p-6">Loading...</p>;
+  if (pageLoading)
+    return <p className="text-xl font-semibold p-6">جاري التحميل...</p>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100" dir="rtl">
       <div className="w-full max-w-xl bg-white p-8 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-6">Edit Subscription</h1>
+
+        <h1 className="text-3xl font-bold mb-6">تعديل الاشتراك</h1>
 
         <form onSubmit={handleUpdate} className="space-y-4">
+
           <input
             type="date"
             value={subSDate}
@@ -144,7 +147,7 @@ export default function EditSubscriptionPage() {
             type="number"
             value={subAmount}
             onChange={(e) => setSubAmount(e.target.value)}
-            placeholder="Amount"
+            placeholder="المبلغ"
             className="w-full border rounded-xl p-3"
           />
 
@@ -153,7 +156,7 @@ export default function EditSubscriptionPage() {
             onChange={(e) => setBrId(e.target.value)}
             className="w-full border rounded-xl p-3"
           >
-            <option value="">Select Branch</option>
+            <option value="">اختر الفرع</option>
             {branches.map((b) => (
               <option key={b.br_id} value={b.br_id}>
                 {b.br_name}
@@ -161,20 +164,22 @@ export default function EditSubscriptionPage() {
             ))}
           </select>
 
-          {/* Optional display only */}
+          {/* INFO */}
           <div className="bg-gray-100 border rounded-xl p-3 text-sm text-gray-700">
-            Edited by: <span className="font-semibold">{sessionUser?.user_name}</span>
+            تم التعديل بواسطة:{" "}
+            <span className="font-semibold">{sessionUser?.user_name}</span>
           </div>
 
           {message && <p className="text-red-600">{message}</p>}
 
           <div className="flex gap-3 pt-2">
+
             <button
               type="submit"
               className="bg-black text-white px-6 py-3 rounded-xl"
               disabled={loading}
             >
-              {loading ? "Updating..." : "Update Subscription"}
+              {loading ? "جاري التحديث..." : "تحديث الاشتراك"}
             </button>
 
             <button
@@ -182,10 +187,13 @@ export default function EditSubscriptionPage() {
               onClick={() => router.push("/admin/sub")}
               className="bg-gray-300 px-6 py-3 rounded-xl"
             >
-              Cancel
+              إلغاء
             </button>
+
           </div>
+
         </form>
+
       </div>
     </div>
   );

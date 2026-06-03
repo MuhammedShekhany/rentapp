@@ -53,7 +53,7 @@ export default function UserPage() {
   }, [router]);
 
   const handleDelete = async (user_id: string) => {
-    const ok = confirm("Are you sure you want to delete this user?");
+    const ok = confirm("هل أنت متأكد من حذف هذا المستخدم؟");
     if (!ok) return;
 
     try {
@@ -66,50 +66,50 @@ export default function UserPage() {
       if (data.success) {
         loadUser();
       } else {
-        alert(data.message || "Delete failed");
+        alert(data.message || "فشل الحذف");
       }
     } catch (error) {
       console.error(error);
-      alert("Server error");
+      alert("خطأ في السيرفر");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6" dir="rtl">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold">User</h1>
-            <p className="text-gray-600 mt-1">Manage all user data</p>
+            <h1 className="text-3xl font-bold">المستخدمون</h1>
+            <p className="text-gray-600 mt-1">إدارة جميع بيانات المستخدمين</p>
           </div>
 
           <button
             onClick={() => router.push("/admin/user/add")}
             className="bg-black text-white px-5 py-3 rounded-xl"
           >
-            + Add User
+            + إضافة مستخدم
           </button>
         </div>
 
         <div className="bg-white rounded-2xl shadow overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading...</div>
+            <div className="p-8 text-center text-gray-500">جاري التحميل...</div>
           ) : user.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              No user found
+              لا يوجد مستخدمين
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-right">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="p-4">ID</th>
-                    <th className="p-4">User Name</th>
-                    <th className="p-4">Full Name</th>
-                    <th className="p-4">Branch</th>
-                    <th className="p-4">Role</th>
-                    <th className="p-4">Password</th>
-                    <th className="p-4">Actions</th>
+                    <th className="p-4">المعرف</th>
+                    <th className="p-4">اسم المستخدم</th>
+                    <th className="p-4">الاسم الكامل</th>
+                    <th className="p-4">الفرع</th>
+                    <th className="p-4">الدور</th>
+                    <th className="p-4">كلمة المرور</th>
+                    <th className="p-4">الإجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -121,23 +121,23 @@ export default function UserPage() {
                       <td className="p-4">{item.br_name || "-"}</td>
                       <td className="p-4">{item.user_role}</td>
                       <td className="p-4">••••••••</td>
-              
+
                       <td className="p-4">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 justify-end">
                           <button
                             onClick={() =>
                               router.push(`/admin/user/edit/${item.user_id}`)
                             }
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                           >
-                            Edit
+                            تعديل
                           </button>
 
                           <button
                             onClick={() => handleDelete(item.user_id)}
                             className="bg-red-600 text-white px-4 py-2 rounded-lg"
                           >
-                            Delete
+                            حذف
                           </button>
                         </div>
                       </td>
@@ -153,7 +153,7 @@ export default function UserPage() {
           onClick={() => router.push("/admin")}
           className="mt-6 bg-gray-800 text-white px-5 py-3 rounded-xl"
         >
-          ← Back to Admin
+          ← الرجوع إلى الإدارة
         </button>
       </div>
     </div>

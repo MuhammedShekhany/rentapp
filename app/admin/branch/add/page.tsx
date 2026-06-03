@@ -24,30 +24,30 @@ export default function AddBranchPage() {
     if (user.user_role !== "admin") router.push("/dashboard");
   }, [router]);
 
-const handleUpload = async (file: File) => {
-  const formData = new FormData();
+  const handleUpload = async (file: File) => {
+    const formData = new FormData();
 
-  formData.append("file", file);
+    formData.append("file", file);
 
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-  });
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!data.success) {
-    throw new Error(data.message || "Upload failed");
-  }
+    if (!data.success) {
+      throw new Error(data.message || "فشل رفع الملف");
+    }
 
-  return data.url;
-};
+    return data.url;
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!brName || !brPhone || !brAdd) {
-      setMessage("Please fill all required fields");
+      setMessage("يرجى تعبئة جميع الحقول المطلوبة");
       return;
     }
 
@@ -69,26 +69,33 @@ const handleUpload = async (file: File) => {
           br_phone: brPhone,
           br_add: brAdd,
           br_logo: logoUrl,
-          br_header: headerUrl, // ✅
+          br_header: headerUrl,
         }),
       });
 
       const data = await res.json();
 
-      if (data.success) router.push("/admin/branch");
-      else setMessage(data.message || "Add failed");
+      if (data.success) {
+        router.push("/admin/branch");
+      } else {
+        setMessage(data.message || "فشل الإضافة");
+      }
     } catch (error: any) {
       console.error(error);
-      setMessage(error.message || "Server error");
+      setMessage(error.message || "خطأ في السيرفر");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+    <div
+      className="min-h-screen bg-gray-100 p-6 flex items-center justify-center"
+      dir="rtl"
+    >
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold mb-6">Add Branch</h1>
+
+        <h1 className="text-3xl font-bold mb-6">إضافة فرع</h1>
 
         <form onSubmit={handleAdd} className="space-y-4">
 
@@ -97,7 +104,7 @@ const handleUpload = async (file: File) => {
             value={brName}
             onChange={(e) => setBrName(e.target.value)}
             className="w-full border rounded-xl p-3"
-            placeholder="Branch name"
+            placeholder="اسم الفرع"
           />
 
           <input
@@ -105,7 +112,7 @@ const handleUpload = async (file: File) => {
             value={brPhone}
             onChange={(e) => setBrPhone(e.target.value)}
             className="w-full border rounded-xl p-3"
-            placeholder="Phone"
+            placeholder="رقم الهاتف"
           />
 
           <input
@@ -113,12 +120,13 @@ const handleUpload = async (file: File) => {
             value={brAdd}
             onChange={(e) => setBrAdd(e.target.value)}
             className="w-full border rounded-xl p-3"
-            placeholder="Address"
+            placeholder="العنوان"
           />
 
-          {/* Logo */}
+          {/* LOGO */}
           <div>
-            <label className="block mb-1 font-medium">Logo</label>
+            <label className="block mb-1 font-medium">الشعار</label>
+
             <input
               type="file"
               id="logoInput"
@@ -137,7 +145,7 @@ const handleUpload = async (file: File) => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  "No Image"
+                  "لا توجد صورة"
                 )}
               </div>
 
@@ -147,15 +155,15 @@ const handleUpload = async (file: File) => {
                   onClick={() => setLogoFile(null)}
                   className="bg-red-500 text-white px-3 py-1 rounded-xl"
                 >
-                  Remove
+                  إزالة
                 </button>
               )}
             </div>
           </div>
 
-          {/* Header */}
+          {/* HEADER */}
           <div>
-            <label className="block mb-1 font-medium">Header</label>
+            <label className="block mb-1 font-medium">الهيدر</label>
 
             <input
               type="file"
@@ -175,7 +183,7 @@ const handleUpload = async (file: File) => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  "No Header"
+                  "لا يوجد هيدر"
                 )}
               </div>
 
@@ -185,18 +193,29 @@ const handleUpload = async (file: File) => {
                   onClick={() => setHeaderFile(null)}
                   className="bg-red-500 text-white px-3 py-1 rounded-xl"
                 >
-                  Remove
+                  إزالة
                 </button>
               )}
             </div>
           </div>
 
           {message && <p className="text-red-500">{message}</p>}
-
+<div className="flex gap-3 pt-2">
           <button className="bg-black text-white px-6 py-3 rounded-xl">
-            {loading ? "Saving..." : "Save"}
+            {loading ? "جاري الحفظ..." : "حفظ"}
           </button>
+
+           <button
+              type="button"
+              onClick={() => router.push("/admin/branch")}
+              className="bg-gray-300 text-black px-6 py-3 rounded-xl"
+            >
+              إلغاء
+            </button>
+            </div>
+
         </form>
+
       </div>
     </div>
   );

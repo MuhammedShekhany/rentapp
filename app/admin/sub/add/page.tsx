@@ -52,7 +52,7 @@ export default function AddSubscriptionPage() {
       if (branchData.success) setBranches(branchData.branch || []);
     } catch (error) {
       console.error(error);
-      setMessage("Server error");
+      setMessage("خطأ في السيرفر");
     } finally {
       setPageLoading(false);
     }
@@ -62,11 +62,11 @@ export default function AddSubscriptionPage() {
     e.preventDefault();
 
     if (!subSDate || !subEDate || !subAmount || !brId) {
-      return setMessage("Fill all fields");
+      return setMessage("يرجى تعبئة جميع الحقول");
     }
 
     if (!sessionUser?.user_id) {
-      return setMessage("User session not found");
+      return setMessage("لم يتم العثور على بيانات المستخدم");
     }
 
     setLoading(true);
@@ -79,7 +79,7 @@ export default function AddSubscriptionPage() {
           sub_e_date: subEDate,
           sub_amount: subAmount,
           br_id: brId,
-          user_id: sessionUser.user_id, // auto from login
+          user_id: sessionUser.user_id,
         }),
       });
 
@@ -88,24 +88,26 @@ export default function AddSubscriptionPage() {
       if (data.success) {
         router.push("/admin/sub");
       } else {
-        setMessage(data.message || "Add failed");
+        setMessage(data.message || "فشل الإضافة");
       }
     } catch (error) {
       console.error(error);
-      setMessage("Server error");
+      setMessage("خطأ في السيرفر");
     } finally {
       setLoading(false);
     }
   };
 
-  if (pageLoading) return <p className="text-xl font-semibold p-6">Loading...</p>;
+  if (pageLoading) return <p className="text-xl font-semibold p-6">جاري التحميل...</p>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100" dir="rtl">
       <div className="w-full max-w-xl bg-white p-8 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-6">Add Subscription</h1>
+
+        <h1 className="text-3xl font-bold mb-6">إضافة اشتراك</h1>
 
         <form onSubmit={handleAdd} className="space-y-4">
+
           <input
             type="date"
             value={subSDate}
@@ -124,7 +126,7 @@ export default function AddSubscriptionPage() {
             type="number"
             value={subAmount}
             onChange={(e) => setSubAmount(e.target.value)}
-            placeholder="Amount"
+            placeholder="المبلغ"
             className="w-full border rounded-xl p-3"
           />
 
@@ -133,7 +135,7 @@ export default function AddSubscriptionPage() {
             onChange={(e) => setBrId(e.target.value)}
             className="w-full border rounded-xl p-3"
           >
-            <option value="">Select Branch</option>
+            <option value="">اختر الفرع</option>
             {branches.map((b) => (
               <option key={b.br_id} value={b.br_id}>
                 {b.br_name}
@@ -141,20 +143,22 @@ export default function AddSubscriptionPage() {
             ))}
           </select>
 
-          {/* Optional display only */}
+          {/* INFO */}
           <div className="bg-gray-100 border rounded-xl p-3 text-sm text-gray-700">
-            Logged in as: <span className="font-semibold">{sessionUser?.user_name}</span>
+            تم تسجيل الدخول كـ:{" "}
+            <span className="font-semibold">{sessionUser?.user_name}</span>
           </div>
 
           {message && <p className="text-red-600">{message}</p>}
 
           <div className="flex gap-3 pt-2">
+
             <button
               type="submit"
               className="bg-black text-white px-6 py-3 rounded-xl"
               disabled={loading}
             >
-              {loading ? "Saving..." : "Add Subscription"}
+              {loading ? "جاري الحفظ..." : "إضافة اشتراك"}
             </button>
 
             <button
@@ -162,10 +166,13 @@ export default function AddSubscriptionPage() {
               onClick={() => router.push("/admin/sub")}
               className="bg-gray-300 px-6 py-3 rounded-xl"
             >
-              Cancel
+              إلغاء
             </button>
+
           </div>
+
         </form>
+
       </div>
     </div>
   );

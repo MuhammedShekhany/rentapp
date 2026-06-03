@@ -57,41 +57,40 @@ export default function EditBranchPage() {
         setBrLogo(data.branch.br_logo || "");
         setBrHeader(data.branch.br_header || "");
       } else {
-        setMessage(data.message || "Failed to load branch");
+        setMessage(data.message || "فشل تحميل الفرع");
       }
     } catch (error) {
       console.error(error);
-      setMessage("Server error while loading");
+      setMessage("خطأ في السيرفر أثناء التحميل");
     } finally {
       setPageLoading(false);
     }
   };
 
-  // ✅ FIXED UPLOAD (matches your API)
+  // UPLOAD
   const handleUpload = async (file: File) => {
-  const formData = new FormData();
+    const formData = new FormData();
+    formData.append("file", file);
 
-  formData.append("file", file);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
 
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-  });
+    const data = await res.json();
 
-  const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.message || "فشل رفع الملف");
+    }
 
-  if (!data.success) {
-    throw new Error(data.message || "Upload failed");
-  }
-
-  return data.url;
-};
+    return data.url;
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!brName || !brPhone || !brAdd) {
-      setMessage("Please fill all required fields");
+      setMessage("يرجى تعبئة جميع الحقول المطلوبة");
       return;
     }
 
@@ -131,11 +130,11 @@ export default function EditBranchPage() {
       if (data.success) {
         router.push("/admin/branch");
       } else {
-        setMessage(data.message || "Update failed");
+        setMessage(data.message || "فشل التحديث");
       }
     } catch (error) {
       console.error(error);
-      setMessage("Server error");
+      setMessage("خطأ في السيرفر");
     } finally {
       setLoading(false);
     }
@@ -154,15 +153,16 @@ export default function EditBranchPage() {
   if (pageLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-xl font-semibold">
-        Loading...
+        جاري التحميل...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center" dir="rtl">
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold mb-6">Edit Branch</h1>
+
+        <h1 className="text-3xl font-bold mb-6">تعديل الفرع</h1>
 
         <form onSubmit={handleUpdate} className="space-y-4">
 
@@ -171,7 +171,7 @@ export default function EditBranchPage() {
             value={brName}
             onChange={(e) => setBrName(e.target.value)}
             className="w-full border p-3 rounded-xl"
-            placeholder="Branch name"
+            placeholder="اسم الفرع"
           />
 
           {/* PHONE */}
@@ -179,7 +179,7 @@ export default function EditBranchPage() {
             value={brPhone}
             onChange={(e) => setBrPhone(e.target.value)}
             className="w-full border p-3 rounded-xl"
-            placeholder="Phone"
+            placeholder="رقم الهاتف"
           />
 
           {/* ADDRESS */}
@@ -187,12 +187,12 @@ export default function EditBranchPage() {
             value={brAdd}
             onChange={(e) => setBrAdd(e.target.value)}
             className="w-full border p-3 rounded-xl"
-            placeholder="Address"
+            placeholder="العنوان"
           />
 
           {/* LOGO */}
           <div>
-            <label className="block mb-1 font-medium">Logo</label>
+            <label className="block mb-1 font-medium">الشعار</label>
 
             <input
               ref={logoRef}
@@ -211,7 +211,7 @@ export default function EditBranchPage() {
                 ) : brLogo ? (
                   <img src={brLogo} className="w-full h-full object-cover" />
                 ) : (
-                  "No Image"
+                  "لا توجد صورة"
                 )}
               </div>
 
@@ -221,7 +221,7 @@ export default function EditBranchPage() {
                   onClick={handleRemoveLogo}
                   className="bg-red-500 text-white px-3 py-1 rounded-xl"
                 >
-                  Remove
+                  إزالة
                 </button>
               )}
             </div>
@@ -229,7 +229,7 @@ export default function EditBranchPage() {
 
           {/* HEADER */}
           <div>
-            <label className="block mb-1 font-medium">Header</label>
+            <label className="block mb-1 font-medium">الهيدر</label>
 
             <input
               ref={headerRef}
@@ -248,7 +248,7 @@ export default function EditBranchPage() {
                 ) : brHeader ? (
                   <img src={brHeader} className="w-full h-full object-cover" />
                 ) : (
-                  "No Header"
+                  "لا يوجد هيدر"
                 )}
               </div>
 
@@ -258,7 +258,7 @@ export default function EditBranchPage() {
                   onClick={handleRemoveHeader}
                   className="bg-red-500 text-white px-3 py-1 rounded-xl"
                 >
-                  Remove
+                  إزالة
                 </button>
               )}
             </div>
@@ -266,10 +266,23 @@ export default function EditBranchPage() {
 
           {message && <p className="text-red-600">{message}</p>}
 
+          <div className="flex gap-3 pt-2">
+
           <button className="bg-black text-white px-6 py-3 rounded-xl">
-            {loading ? "Updating..." : "Update Branch"}
+            {loading ? "جاري التحديث..." : "تحديث الفرع"}
           </button>
+
+           <button
+              type="button"
+              onClick={() => router.push("/admin/branch")}
+              className="bg-gray-300 text-black px-6 py-3 rounded-xl"
+            >
+              إلغاء
+            </button>
+            </div>
+
         </form>
+
       </div>
     </div>
   );
