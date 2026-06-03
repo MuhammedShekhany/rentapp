@@ -50,6 +50,9 @@ function LoginContent() {
     }
 
     try {
+
+          console.log("branch.br_logo");
+    console.log(branch!.br_logo);
       setLoading(true);
       setMessage("");
       const res = await fetch("/api/login", {
@@ -105,8 +108,7 @@ function LoginContent() {
         {branch?.br_logo ? (
           <div className="w-28 h-28 rounded-full border-4 border-black overflow-hidden mb-4">
             <Image
-              //src={getLogoUrl(branch.br_logo)}
-              src={branch.br_logo}
+              src={getLogoUrl(branch.br_logo)}
               alt={branch?.br_name || "شعار الفرع"}
               width={112}
               height={112}

@@ -25,7 +25,8 @@ function LoginContent() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-
+    console.log("branch.br_logo");
+    console.log(branch!.br_logo);
     const data = localStorage.getItem("branchData");
     if (data) {
       const parsed = JSON.parse(data);
@@ -105,8 +106,7 @@ function LoginContent() {
         {branch?.br_logo ? (
           <div className="w-28 h-28 rounded-full border-4 border-black overflow-hidden mb-4">
             <Image
-              //src={getLogoUrl(branch.br_logo)}
-              src={branch.br_logo}
+              src={getLogoUrl(branch.br_logo)}
               alt={branch?.br_name || "شعار الفرع"}
               width={112}
               height={112}
@@ -145,7 +145,6 @@ function LoginContent() {
           className="w-full bg-black text-white rounded-xl p-3 font-semibold hover:opacity-90 transition disabled:opacity-50"
         >
           {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
-          
         </button>
       </form>
     </div>
