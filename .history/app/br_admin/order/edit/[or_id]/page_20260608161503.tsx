@@ -38,7 +38,7 @@ export default function EditOrderPage() {
   const inlineRef = useRef<HTMLDivElement>(null);
 
 
-  const [or_no, setOrderNo] = useState("");
+  const [orderNo, setOrderNo] = useState("");
   const [or_date, setOrDate] = useState("");
   const [or_note, setOrNote] = useState("");
   const [or_cus_name, setOrCusName] = useState("");
@@ -130,7 +130,9 @@ export default function EditOrderPage() {
           setOrCusName(o.or_cus_name || "");
           setOrCusPhone(o.or_cus_phone || "");
           setOrCusPhone2(o.or_cus_phone2 || "");
-     
+          //setOrPrepareDate(o.or_prepare_date ? o.or_prepare_date.split("T")[0].split(" ")[0] : "");
+          //setOrDateReserve(o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "");
+          //setReceiptDate(o.or_date_reciept ? o.or_date_reciept.split("T")[0].split(" ")[0] : "");
 
           if (o.or_date_reserve) {
             const cleanDate = new Date(o.or_date_reserve).toLocaleDateString('en-CA');
@@ -146,7 +148,8 @@ export default function EditOrderPage() {
             const cleanDate2 = prepDate.toLocaleDateString('en-CA');
 
             setReceiptDate(cleanDate2);
-          
+            
+            console.log(orderNo);
           }
 
 
@@ -385,7 +388,7 @@ export default function EditOrderPage() {
             </button>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={s.orderIdChip}>تعديل الطلب #{or_no}</span>
+            <span style={s.orderIdChip}>تعديل الطلب #{orderNo}</span>
           </div>
           <div style={s.topBarRight}>
             <button onClick={handleUpdate} disabled={loading} style={s.saveBtn} className="save-btn">
@@ -430,7 +433,7 @@ export default function EditOrderPage() {
           <div style={s.metaRow}>
             <div style={s.metaLeft}>
               <span style={s.metaLabel}>رقم وصل :</span>
-              <span style={s.metaValue}>{or_no}</span>
+              <span style={s.metaValue}>{orderNo}</span>
             </div>
 
             {/* VIP toggle */}

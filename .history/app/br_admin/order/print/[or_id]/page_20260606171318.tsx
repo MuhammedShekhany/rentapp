@@ -73,7 +73,6 @@ const fmtDateTime = (val?: string | null) => {
 export default function PrintOrderPage() {
     const params = useParams();
     const orderId = params?.or_id as string;
-    const orderno = params?.or_no as string;
 
     const [order, setOrder] = useState<OrderType | null>(null);
     const [branch, setBranch] = useState<BranchType | null>(null);

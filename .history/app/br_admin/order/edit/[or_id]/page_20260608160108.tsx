@@ -17,6 +17,7 @@ type DetailType = {
   ord_price: number;
   ord_total: number;
   pro_img?: string;
+  or_no:number
 
 };
 
@@ -33,12 +34,11 @@ export default function EditOrderPage() {
   const router = useRouter();
   const params = useParams();
   const or_id = params?.or_id as string;
+  const [or_no, setOrno] = useState("");
 
   const modalRef = useRef<HTMLDivElement>(null);
   const inlineRef = useRef<HTMLDivElement>(null);
 
-
-  const [or_no, setOrderNo] = useState("");
   const [or_date, setOrDate] = useState("");
   const [or_note, setOrNote] = useState("");
   const [or_cus_name, setOrCusName] = useState("");
@@ -124,13 +124,15 @@ export default function EditOrderPage() {
 
         if (orderData.success) {
           const o = orderData.order;
-          setOrderNo(o.or_no);
+          setOrno(o.or_no);
           setOrDate(o.or_date ? o.or_date.split("T")[0].split(" ")[0] : "");
           setOrNote(o.or_note || "");
           setOrCusName(o.or_cus_name || "");
           setOrCusPhone(o.or_cus_phone || "");
           setOrCusPhone2(o.or_cus_phone2 || "");
-     
+          //setOrPrepareDate(o.or_prepare_date ? o.or_prepare_date.split("T")[0].split(" ")[0] : "");
+          //setOrDateReserve(o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "");
+          //setReceiptDate(o.or_date_reciept ? o.or_date_reciept.split("T")[0].split(" ")[0] : "");
 
           if (o.or_date_reserve) {
             const cleanDate = new Date(o.or_date_reserve).toLocaleDateString('en-CA');
@@ -146,7 +148,11 @@ export default function EditOrderPage() {
             const cleanDate2 = prepDate.toLocaleDateString('en-CA');
 
             setReceiptDate(cleanDate2);
-          
+            
+            console.log("or_date_reserve");
+            console.log(cleanDate);
+            console.log("or_date_prepDate");
+             console.log(cleanDate2);
           }
 
 
@@ -158,6 +164,11 @@ export default function EditOrderPage() {
 
           }
 
+
+
+
+          console.log(o.or_date_reserve);
+          console.log(o.or_date_reserve.split("T")[0].split(" ")[0]);
           //console.log(o.or_prepare_date.toLocaleDateString('en-CA'));
 
           // const reserveVal = o.or_date_reserve ? o.or_date_reserve.split("T")[0].split(" ")[0] : "";

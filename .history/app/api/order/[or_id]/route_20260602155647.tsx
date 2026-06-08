@@ -19,7 +19,6 @@ export async function GET(req: Request, { params }: Params) {
       `
       SELECT 
         o.or_id,
-        o.or_no,
         o.or_date,
         o.or_total,
 
