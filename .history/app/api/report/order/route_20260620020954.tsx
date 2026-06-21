@@ -12,23 +12,7 @@ export async function GET(req: NextRequest) {
     const year = searchParams.get("year") || "";
 
     // =========================================================
-    // 1. START DATE (FOR PREVIOUS BALANCE)
-    // =========================================================
-    let startDate: string | null = null;
-
-    if (type === "daily" && date) {
-      startDate = `${date} 00:00:00`;
-    } else if (type === "monthly" && month) {
-      startDate = `${month}-01 00:00:00`;
-    } else if (type === "yearly" && year) {
-      startDate = `${year}-01-01 00:00:00`;
-    }
-
-    // fallback safety (IMPORTANT)
-    if (!startDate) startDate = "1970-01-01 00:00:00";
-
-    // =========================================================
-    // 2. ORDERS (CURRENT PERIOD)
+    // 1. ORDERS FILTER
     // =========================================================
     let orderWhere = "WHERE 1=1";
     const orderParams: any[] = [];
@@ -49,6 +33,7 @@ export async function GET(req: NextRequest) {
       orderParams.push(year);
     }
 
+    // ORDERS QUERY
     const [orders]: any = await db.execute(
       `
       SELECT
@@ -58,26 +43,36 @@ export async function GET(req: NextRequest) {
         o.or_total,
         o.or_cus_name,
         o.or_cus_phone,
+        o.or_cus_phone2,
+        o.or_delivery,
+        o.or_receipt,
+        o.or_preparing,
+        o.or_note,
+        o.br_id,
+        o.user_id,
+        o.createat,
+        o.or_prepare_date,
         o.or_vip,
+        o.or_delayed,
+        o.or_date_reserve,
         u.user_name,
-        u.user_fullname,
-        COALESCE(p.total_paid,0) AS paid_total,
-        (o.or_total - COALESCE(p.total_paid,0)) AS remaining
+        COALESCE(p_sum.total_paid, 0) AS paid_total,
+        (o.or_total - COALESCE(p_sum.total_paid, 0)) AS remaining
       FROM \`order\` o
       LEFT JOIN user u ON o.user_id = u.user_id
       LEFT JOIN (
-        SELECT or_id, SUM(pay_total) AS total_paid
-        FROM payment
+        SELECT or_id, SUM(pay_total) AS total_paid 
+        FROM payment 
         GROUP BY or_id
-      ) p ON o.or_id = p.or_id
+      ) p_sum ON o.or_id = p_sum.or_id
       ${orderWhere}
-      ORDER BY o.or_date DESC
+      ORDER BY o.or_date DESC, o.or_no DESC
       `,
       orderParams
     );
 
     // =========================================================
-    // 3. PAYMENTS (CURRENT PERIOD)
+    // 2. PAYMENTS FILTER
     // =========================================================
     let paymentWhere = "WHERE 1=1";
     const paymentParams: any[] = [];
@@ -106,17 +101,17 @@ export async function GET(req: NextRequest) {
         p.pay_total,
         p.pay_date,
         o.or_no,
-        o.or_total,
+        o.br_id,
         o.or_cus_name,
-        u.user_name,
-        u.user_fullname,
-        (o.or_total - COALESCE(p_all.total_paid,0)) AS remaining
+        o.or_total,
+        (o.or_total - COALESCE(p_all.total_paid, 0)) AS remaining,
+        u.user_name
       FROM payment p
       INNER JOIN \`order\` o ON p.or_id = o.or_id
       LEFT JOIN user u ON o.user_id = u.user_id
       LEFT JOIN (
-        SELECT or_id, SUM(pay_total) AS total_paid
-        FROM payment
+        SELECT or_id, SUM(pay_total) AS total_paid 
+        FROM payment 
         GROUP BY or_id
       ) p_all ON o.or_id = p_all.or_id
       ${paymentWhere}
@@ -126,7 +121,7 @@ export async function GET(req: NextRequest) {
     );
 
     // =========================================================
-    // 4. SPEND (CURRENT PERIOD)
+    // 3. SPEND FILTER (NEW)
     // =========================================================
     let spendWhere = "WHERE 1=1";
     const spendParams: any[] = [];
@@ -154,9 +149,11 @@ export async function GET(req: NextRequest) {
         s.sp_total,
         s.sp_date,
         s.sp_detail,
-         u.user_fullname
+        s.br_id,
+        s.user_id,
+        s.sp_gat_id,
+        s.sp_no
       FROM spend s
-      LEFT JOIN user u ON s.user_id = u.user_id
       ${spendWhere}
       ORDER BY s.sp_date DESC
       `,
@@ -164,47 +161,17 @@ export async function GET(req: NextRequest) {
     );
 
     // =========================================================
-    // 5. PREVIOUS BALANCE (SAFE FIX)
-    // =========================================================
-
-    const [prevPayRows]: any = await db.execute(
-      `
-      SELECT COALESCE(SUM(pay_total),0) AS total
-      FROM payment
-      WHERE br_id = ?
-      AND pay_date < ?
-      `,
-      [br_id, startDate]
-    );
-
-    const [prevSpendRows]: any = await db.execute(
-      `
-      SELECT COALESCE(SUM(sp_total),0) AS total
-      FROM spend
-      WHERE br_id = ?
-      AND sp_date < ?
-      `,
-      [br_id, startDate]
-    );
-
-    const prevPayTotal = prevPayRows?.[0]?.total || 0;
-    const prevSpendTotal = prevSpendRows?.[0]?.total || 0;
-
-    const previousBalance = prevPayTotal - prevSpendTotal;
-
-    // =========================================================
     // RESPONSE
     // =========================================================
     return NextResponse.json({
       success: true,
-      order: orders || [],
-      payments: payments || [],
-      spend: spend || [],
-      previousBalance,
+      order: orders,
+      payments: payments,
+      spend: spend,
     });
 
   } catch (error) {
-    console.error("API ERROR:", error);
+    console.error("GET order report error:", error);
 
     return NextResponse.json({
       success: false,

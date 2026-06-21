@@ -23,7 +23,6 @@ type OrderType = {
   or_delayed: number;
   or_date_reserve: string;
   user_name: string;
-  user_fullname: string;
   paid_total: number;
   remaining: number;
 };
@@ -39,7 +38,6 @@ type PaymentType = {
   or_total: number;
   remaining: number;
   user_name: string;
-  user_fullname: string;
 };
 
 type UserType = {
@@ -52,16 +50,15 @@ type UserType = {
 };
 
 type FilterType = "daily" | "monthly" | "yearly";
-type ViewModeType = "all" | "payments" | "remaining" | "spend";
+type ViewModeType = "all" | "payments" | "remaining";
 
 export default function OrderReportPage() {
   const router = useRouter();
 
   const [orders, setOrders] = useState<OrderType[]>([]);
-  const [payments, setPayments] = useState<PaymentType[]>([]); // ✅ Added payments state
-  const [loading, setLoading] = useState(true);
+  const [payments, setPayments] = useState<PaymentType[]>([]); 
   const [spend, setSpend] = useState<any[]>([]);
-  const [previousBalance, setPreviousBalance] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserType | null>(null);
 
   const [filterType, setFilterType] = useState<FilterType>("daily");
@@ -115,20 +112,14 @@ export default function OrderReportPage() {
         setOrders(data.order || []);
         setPayments(data.payments || []); // ✅ Save payments array here
         setSpend(data.spend || []);
-        setPreviousBalance(data.previousBalance || 0);
       } else {
         setOrders([]);
         setPayments([]);
-        setSpend([]);
-        setPreviousBalance(0);
       }
     } catch (error) {
       console.error(error);
       setOrders([]);
       setPayments([]);
-      setSpend([]);
-      setPreviousBalance(0);
-
     } finally {
       setLoading(false);
     }
@@ -157,7 +148,7 @@ export default function OrderReportPage() {
       setOrders([]);
       setPayments([]); // ✅ Clear out previous batch immediately
       setSpend([]);
-      setPreviousBalance(0);
+
       setLoading(true);
       loadData();
     }
@@ -183,9 +174,9 @@ export default function OrderReportPage() {
   // );
 
   const totalRemainingSum = useMemo(
-    () => totalOrdersSum - totalPaidSum,
-    [totalOrdersSum, totalPaidSum]
-  );
+  () => totalOrdersSum - totalPaidSum,
+  [totalOrdersSum, totalPaidSum]
+);
 
   const remainingOrdersList = useMemo(
     () => orders.filter((o) => Number(o.remaining) > 0),
@@ -196,15 +187,25 @@ export default function OrderReportPage() {
 
 
 
-  // إذا عندك جدول مصاريف أضفه هنا
-  const totalSpendSum = useMemo(
+  const previousBalance = 0; // لاحقاً تجيبه من API
+
+
+// إذا عندك جدول مصاريف أضفه هنا
+const totalSpendSum = useMemo(
     () => spend.reduce((s, i) => s + Number(i.sp_total || 0), 0),
     [spend]
   );;
 
-  const finalBalance = useMemo(() => {
-    return previousBalance + totalPaidSum - totalSpendSum;
-  }, [previousBalance, totalPaidSum, totalSpendSum]);
+const finalBalance = useMemo(() => {
+  return previousBalance + totalPaidSum - totalSpendSum;
+}, [previousBalance, totalPaidSum, totalSpendSum]);
+
+
+
+
+
+
+
 
 
 
@@ -278,146 +279,58 @@ export default function OrderReportPage() {
           )}
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
         {/* INTERACTIVE CARDS */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
 
   {/* Previous Balance */}
-  <div className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-purple-50 border-purple-500">
-
-    {/* Tooltip */}
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      الرصيد السابق (المبلغ المرحل من الفترة السابقة)
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>الرصيد السابق</span>
-      <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        افتتاحي
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-purple-600 mt-3">
+  <div className="rounded-2xl shadow p-6 bg-white border">
+    <div className="text-sm text-gray-500">الرصيد السابق</div>
+    <div className="text-2xl font-bold text-gray-700 mt-2">
       {formatNumber(previousBalance)}
     </div>
   </div>
 
   {/* Total Orders */}
-  <div onClick={() => setViewMode("all")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-green-300">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      إجمالي قيمة وعدد الطلبات خلال الفترة
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>إجمالي الطلبات</span>
-      <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        العدد: {orders.length}
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-green-600 mt-3">
+  <div className="rounded-2xl shadow p-6 bg-white border">
+    <div className="text-sm text-gray-500">إجمالي المبيعات</div>
+    <div className="text-2xl font-bold text-green-600 mt-2">
       {formatNumber(totalOrdersSum)}
     </div>
   </div>
 
   {/* Payments */}
-  <div onClick={() => setViewMode("payments")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-blue-300">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      المدفوعات التي تم استلامها من الزبائن
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>المدفوعات المستلمة</span>
-      <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        العمليات: {payments.length}
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-blue-600 mt-3">
+  <div className="rounded-2xl shadow p-6 bg-white border">
+    <div className="text-sm text-gray-500">المقبوضات</div>
+    <div className="text-2xl font-bold text-blue-600 mt-2">
       {formatNumber(totalPaidSum)}
     </div>
   </div>
 
   {/* Remaining */}
-  <div onClick={() => setViewMode("remaining")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-red-300">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      المبلغ المتبقي = إجمالي الطلبات - المدفوعات
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>المتبقي غير المدفوع</span>
-      <span className="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        الطلبات المعلقة: {remainingOrdersList.length}
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-red-600 mt-3">
+  <div className="rounded-2xl shadow p-6 bg-white border">
+    <div className="text-sm text-gray-500">المتبقي</div>
+    <div className="text-2xl font-bold text-yellow-600 mt-2">
       {formatNumber(totalRemainingSum)}
     </div>
   </div>
 
-  {/* Expenses */}
-  <div onClick={() => setViewMode("spend")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-orange-300">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      جميع المصاريف المسجلة داخل النظام
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>المصاريف</span>
-      <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        العمليات: {spend.length}
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-orange-600 mt-3">
+  {/* Spend */}
+  <div className="rounded-2xl shadow p-6 bg-white border">
+    <div className="text-sm text-gray-500">المصاريف</div>
+    <div className="text-2xl font-bold text-red-600 mt-2">
       {formatNumber(totalSpendSum)}
     </div>
   </div>
 
   {/* Final Balance */}
-  <div className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-emerald-50 border-emerald-500">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      الرصيد النهائي = (المبيعات + المدفوعات) - المصاريف
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>الرصيد النهائي</span>
-      <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        صافي
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-emerald-600 mt-3">
+  <div className="rounded-2xl shadow p-6 bg-black text-white">
+    <div className="text-sm text-gray-300">الرصيد النهائي</div>
+    <div className="text-2xl font-bold mt-2">
       {formatNumber(finalBalance)}
     </div>
   </div>
 
 </div>
-
-
-
-
-
-
-
-
-
 
         {/* DATA CONTAINER */}
         <div className="bg-white rounded-2xl shadow overflow-hidden">
@@ -426,10 +339,9 @@ export default function OrderReportPage() {
               {viewMode === "all" && "سجل كافة تفاصيل الطلبات الجديدة"}
               {viewMode === "payments" && "سجل عمليات الدفع المجمعة حسب رقم المعاملة"}
               {viewMode === "remaining" && "كشف الطلبات المتبقي عليها مبالغ مالية"}
-              {viewMode === "spend" && "كشف المصاريف"}
             </span>
             <span className="text-sm font-normal text-gray-500">
-              عرض: {viewMode === "all" ? orders.length : viewMode === "payments" ? payments.length : viewMode === "remaining" ? remainingOrdersList.length : spend.length} سجل
+              عرض: {viewMode === "all" ? orders.length : viewMode === "payments" ? payments.length : remainingOrdersList.length} سجل
             </span>
           </div>
 
@@ -473,7 +385,7 @@ export default function OrderReportPage() {
                               <td className="p-4 text-blue-600 font-bold">{formatNumber(item.paid_total)}</td>
                               <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
                               <td className="p-4">{item.or_vip === 1 ? "VIP" : "-"}</td>
-                              <td className="p-4">{item.user_fullname}</td>
+                              <td className="p-4">{item.user_name}</td>
                               <td className="p-4">
                                 <button
                                   onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
@@ -521,7 +433,7 @@ export default function OrderReportPage() {
                             <td className="p-4 text-gray-700 font-medium">{formatNumber(item.or_total)}</td>
                             <td className="p-4 text-blue-600 font-extrabold bg-blue-50/50">{formatNumber(item.pay_total)}</td>
                             <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
-                            <td className="p-4 text-gray-600">{item.user_fullname}</td>
+                            <td className="p-4 text-gray-600">{item.user_name}</td>
                             <td className="p-4">
                               <button
                                 onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
@@ -529,58 +441,6 @@ export default function OrderReportPage() {
                               >
                                 تفاصيل
                               </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )
-              )}
-
-              {/* VIEW: SPEND */}
-              {viewMode === "spend" && (
-                spend.length === 0 ? (
-                  <div className="p-10 text-center text-gray-500">
-                    لا توجد مصاريف مسجلة لهذه المدة
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-orange-50">
-                        <tr>
-                          <th className="p-4 text-right">رقم المصروف</th>
-                          <th className="p-4 text-right">التاريخ</th>
-                          <th className="p-4 text-right">الوصف</th>
-                          <th className="p-4 text-right text-orange-700">المبلغ</th>
-                          <th className="p-4 text-right">الموظف</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {spend.map((item) => (
-                          <tr
-                            key={item.sp_id}
-                            className="border-b hover:bg-orange-50/30"
-                          >
-                            <td className="p-4 font-bold">
-                              #{item.sp_id}
-                            </td>
-
-                            <td className="p-4 text-xs text-gray-600">
-                              {new Date(item.sp_date).toLocaleDateString("en-GB")}
-                            </td>
-
-                            <td className="p-4 font-medium">
-                              {item.sp_detail}
-                            </td>
-
-                            <td className="p-4 text-orange-600 font-extrabold bg-orange-50/50">
-                              {formatNumber(item.sp_total)}
-                            </td>
-
-                            <td className="p-4 text-gray-600">
-                              {item.user_full_name}
                             </td>
                           </tr>
                         ))}

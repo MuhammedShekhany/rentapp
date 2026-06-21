@@ -109,7 +109,7 @@ export default function AdminPage() {
       {
         title: "استلام المدفوعات الحجوزات",
         desc: "إدارة استلام المدفوعات الحجوزات",
-        path: `${basePath}/payment_r`,
+        path: `${basePath}/order_payment`,
         icon: <Wallet size={28} />,
         color: "from-red-500 to-orange-600",
       },
@@ -145,6 +145,13 @@ export default function AdminPage() {
         title: "تقارير الحجوزات",
         desc: "عرض التقارير",
         path: `${basePath}/report/order`,
+        icon: <ClipboardCheck size={28} />,
+        color: "from-teal-500 to-cyan-600",
+      },
+      {
+        title: "تقارير المالية",
+        desc: "عرض التقارير",
+        path: `${basePath}/report/finance_total`,
         icon: <ClipboardCheck size={28} />,
         color: "from-teal-500 to-cyan-600",
       },

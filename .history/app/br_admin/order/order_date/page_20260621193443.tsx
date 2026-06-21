@@ -26,7 +26,7 @@ type OrderType = {
   br_id: string;
   paid_total: number;
   remaining: number;
-  or_preparing: number;
+   or_preparing: number;
 };
 
 type UserType = {
@@ -44,7 +44,7 @@ export default function OrderPage() {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTop, setShowTop] = useState(false);
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
+const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
 
   const [fromDate, setFromDate] = useState("");
@@ -56,19 +56,15 @@ export default function OrderPage() {
     Number(num || 0).toLocaleString("en-US");
 
   // ======================
-  // LOAD ORDERS (With background option)
+  // LOAD ORDERS
   // ======================
   const loadOrders = async (
     branchId: string,
     from?: string,
-    to?: string,
-    isBackground = false
+    to?: string
   ) => {
     try {
-      // Avoid destroying the DOM table structure during item status toggles
-      if (!isBackground) {
-        setLoading(true);
-      }
+      setLoading(true);
 
       let url = `/api/order/date_range?br_id=${branchId}`;
 
@@ -83,13 +79,14 @@ export default function OrderPage() {
         setOrders(data.orders);
 
         // --- RESTORE SCROLL POSITION ---
+        // Runs right after orders are loaded into the state
         setTimeout(() => {
           const savedScrollY = sessionStorage.getItem("order_page_scroll");
           if (savedScrollY) {
             window.scrollTo(0, parseInt(savedScrollY, 10));
-            sessionStorage.removeItem("order_page_scroll");
+            sessionStorage.removeItem("order_page_scroll"); // Clear up memory
           }
-        }, 50);
+        }, 80);
         // -------------------------------
 
       } else {
@@ -157,14 +154,10 @@ export default function OrderPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ======================
-  // TOGGLE PREPARING (Fixed Scroll)
+// ======================
+  // TOGGLE PREPARING
   // ======================
   const togglePreparing = async (or_id: number, current: number) => {
-    // 1. Immediately track exactly where the user is looking
-    const currentScrollY = window.scrollY;
-    sessionStorage.setItem("order_page_scroll", currentScrollY.toString());
-
     try {
       setUpdatingId(or_id);
 
@@ -179,8 +172,7 @@ export default function OrderPage() {
       const data = await res.json();
 
       if (data.success) {
-        // 2. Pass true to keep the table elements on screen during reload
-        await loadOrders(user!.br_id, fromDate, toDate, true);
+        loadOrders(user!.br_id, fromDate, toDate);
       } else {
         alert(data.message || "فشل التحديث");
       }
@@ -189,15 +181,23 @@ export default function OrderPage() {
       alert("خطأ في السيرفر");
     } finally {
       setUpdatingId(null);
-      // 3. Re-apply instantly if any component render lifecycle tried shifting it
-      window.scrollTo(0, currentScrollY);
     }
   };
+
+
+
+
+
+
+
+
+
 
   // ======================
   // NAVIGATION HANDLER (SAVE SCROLL)
   // ======================
   const handleDetailNavigation = (or_id: number) => {
+    // Save current scroll metrics right before navigating away
     sessionStorage.setItem("order_page_scroll", window.scrollY.toString());
     router.push(`/br_admin/order/detail/${or_id}`);
   };
@@ -355,6 +355,8 @@ export default function OrderPage() {
                         <td className="p-4">{item.user_fullname}</td>
                       </tr>
 
+                      
+
                       <tr className="border-b bg-gray-50">
 
                         <td className="p-4">
@@ -389,7 +391,9 @@ export default function OrderPage() {
                             </button>
 
                             <button
-                              onClick={() => handleDetailNavigation(item.or_id)}
+                              onClick={() =>
+                                router.push(`/br_admin/order/detail/${item.or_id}`)
+                              }
                               className="bg-purple-600 text-white px-4 py-2 rounded-lg"
                             >
                               تفاصيل

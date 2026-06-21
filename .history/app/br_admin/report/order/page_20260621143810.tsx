@@ -39,7 +39,6 @@ type PaymentType = {
   or_total: number;
   remaining: number;
   user_name: string;
-  user_fullname: string;
 };
 
 type UserType = {
@@ -473,7 +472,7 @@ export default function OrderReportPage() {
                               <td className="p-4 text-blue-600 font-bold">{formatNumber(item.paid_total)}</td>
                               <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
                               <td className="p-4">{item.or_vip === 1 ? "VIP" : "-"}</td>
-                              <td className="p-4">{item.user_fullname}</td>
+                              <td className="p-4">{item.user_name}</td>
                               <td className="p-4">
                                 <button
                                   onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
@@ -521,7 +520,7 @@ export default function OrderReportPage() {
                             <td className="p-4 text-gray-700 font-medium">{formatNumber(item.or_total)}</td>
                             <td className="p-4 text-blue-600 font-extrabold bg-blue-50/50">{formatNumber(item.pay_total)}</td>
                             <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
-                            <td className="p-4 text-gray-600">{item.user_fullname}</td>
+                            <td className="p-4 text-gray-600">{item.user_name}</td>
                             <td className="p-4">
                               <button
                                 onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
@@ -580,7 +579,7 @@ export default function OrderReportPage() {
                             </td>
 
                             <td className="p-4 text-gray-600">
-                              {item.user_full_name}
+                              {item.user_fullname}
                             </td>
                           </tr>
                         ))}

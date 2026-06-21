@@ -2,12 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  CheckCircle2,
-  CookingPot,
-  PackageCheck,
-  PackageX,
-} from "lucide-react";
 
 type OrderType = {
   or_id: number;
@@ -26,7 +20,6 @@ type OrderType = {
   br_id: string;
   paid_total: number;
   remaining: number;
-  or_preparing: number;
 };
 
 type UserType = {
@@ -44,7 +37,7 @@ export default function OrderPage() {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTop, setShowTop] = useState(false);
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
+
   const [search, setSearch] = useState("");
 
   const [fromDate, setFromDate] = useState("");
@@ -56,19 +49,15 @@ export default function OrderPage() {
     Number(num || 0).toLocaleString("en-US");
 
   // ======================
-  // LOAD ORDERS (With background option)
+  // LOAD ORDERS
   // ======================
   const loadOrders = async (
     branchId: string,
     from?: string,
-    to?: string,
-    isBackground = false
+    to?: string
   ) => {
     try {
-      // Avoid destroying the DOM table structure during item status toggles
-      if (!isBackground) {
-        setLoading(true);
-      }
+      setLoading(true);
 
       let url = `/api/order/date_range?br_id=${branchId}`;
 
@@ -81,17 +70,18 @@ export default function OrderPage() {
 
       if (data?.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
-
+        
         // --- RESTORE SCROLL POSITION ---
+        // We look for a saved scroll position after the data has loaded and rendered
         setTimeout(() => {
           const savedScrollY = sessionStorage.getItem("order_page_scroll");
           if (savedScrollY) {
             window.scrollTo(0, parseInt(savedScrollY, 10));
-            sessionStorage.removeItem("order_page_scroll");
+            sessionStorage.removeItem("order_page_scroll"); // Clean up
           }
-        }, 50);
+        }, 100); 
         // -------------------------------
-
+        
       } else {
         setOrders([]);
       }
@@ -158,46 +148,10 @@ export default function OrderPage() {
   }, []);
 
   // ======================
-  // TOGGLE PREPARING (Fixed Scroll)
-  // ======================
-  const togglePreparing = async (or_id: number, current: number) => {
-    // 1. Immediately track exactly where the user is looking
-    const currentScrollY = window.scrollY;
-    sessionStorage.setItem("order_page_scroll", currentScrollY.toString());
-
-    try {
-      setUpdatingId(or_id);
-
-      const res = await fetch(`/api/order/${or_id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          or_preparing: current == 1 ? 0 : 1,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        // 2. Pass true to keep the table elements on screen during reload
-        await loadOrders(user!.br_id, fromDate, toDate, true);
-      } else {
-        alert(data.message || "فشل التحديث");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("خطأ في السيرفر");
-    } finally {
-      setUpdatingId(null);
-      // 3. Re-apply instantly if any component render lifecycle tried shifting it
-      window.scrollTo(0, currentScrollY);
-    }
-  };
-
-  // ======================
   // NAVIGATION HANDLER (SAVE SCROLL)
   // ======================
-  const handleDetailNavigation = (or_id: number) => {
+  const handleNavigateToDetail = (or_id: number) => {
+    // Save current scroll position before pushing to the next route
     sessionStorage.setItem("order_page_scroll", window.scrollY.toString());
     router.push(`/br_admin/order/detail/${or_id}`);
   };
@@ -326,79 +280,42 @@ export default function OrderPage() {
 
                 <tbody>
                   {filteredOrders.map((item) => (
-                    <>
-                      <tr key={item.or_id} className="hover:bg-gray-50">
-                        <td className="p-4 font-semibold">#{item.or_no}</td>
-                        <td className="p-4">{item.or_cus_name || "-"}</td>
-                        <td className="p-4">{item.or_cus_phone || "-"}</td>
+                    <tr key={item.or_id} className="hover:bg-gray-50 border-b">
+                      {/* Unified your split rows into a cleaner UI flow */}
+                      <td className="p-4 font-semibold">#{item.or_no}</td>
+                      <td className="p-4">{item.or_cus_name || "-"}</td>
+                      <td className="p-4">{item.or_cus_phone || "-"}</td>
 
-                        <td className="p-4 text-blue-700 font-bold">
-                          {formatNumber(item.or_total)}
-                        </td>
+                      <td className="p-4 text-blue-700 font-bold">
+                        {formatNumber(item.or_total)}
+                      </td>
 
-                        <td className="p-4 text-green-700 font-bold">
-                          {formatNumber(item.paid_total)}
-                        </td>
+                      <td className="p-4 text-green-700 font-bold">
+                        {formatNumber(item.paid_total)}
+                      </td>
 
-                        <td className="p-4 text-red-700 font-bold">
-                          {formatNumber(item.remaining)}
-                        </td>
+                      <td className="p-4 text-red-700 font-bold">
+                        {formatNumber(item.remaining)}
+                      </td>
 
-                        <td className="p-4">
-                          {item.or_vip == 1 ? "VIP" : "-"}
-                        </td>
+                      <td className="p-4">
+                        {item.or_vip === 1 ? "VIP" : "-"}
+                      </td>
 
-                        <td className="p-4">
-                          {new Date(item.or_date).toLocaleString("en-GB")}
-                        </td>
+                      <td className="p-4">
+                        {new Date(item.or_date).toLocaleString("en-GB")}
+                      </td>
 
-                        <td className="p-4">{item.user_fullname}</td>
-                      </tr>
-
-                      <tr className="border-b bg-gray-50">
-
-                        <td className="p-4">
-                          {item.or_preparing == 1 ? (
-                            <span className="flex items-center gap-2 text-green-600 font-bold">
-                              <CheckCircle2 size={18} /> جاهز
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-2 text-orange-600 font-bold">
-                              <CookingPot size={18} /> قيد التحضير
-                            </span>
-                          )}
-                        </td>
-                        <td colSpan={16} className="p-3">
-                          <div className="flex gap-2">
-
-                            <button
-                              disabled={updatingId === item.or_id}
-                              onClick={() =>
-                                togglePreparing(item.or_id, item.or_preparing)
-                              }
-                              className={`px-4 py-2 rounded-lg text-white ${item.or_preparing == 1
-                                  ? "bg-green-600 hover:bg-green-700"
-                                  : "bg-red-600 hover:bg-red-700"
-                                }`}
-                            >
-                              {updatingId === item.or_id
-                                ? "جاري التحديث..."
-                                : item.or_preparing == 1
-                                  ? "جاهز"
-                                  : "غير جاهز"}
-                            </button>
-
-                            <button
-                              onClick={() => handleDetailNavigation(item.or_id)}
-                              className="bg-purple-600 text-white px-4 py-2 rounded-lg"
-                            >
-                              تفاصيل
-                            </button>
-
-                          </div>
-                        </td>
-                      </tr>
-                    </>
+                      <td className="p-4 flex items-center justify-between gap-2">
+                        <span>{item.user_fullname}</span>
+                        <button
+                          onClick={() => handleNavigateToDetail(item.or_id)}
+                          className="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs"
+                        >
+                          تفاصيل
+                        </button>
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
 

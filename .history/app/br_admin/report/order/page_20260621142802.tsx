@@ -23,7 +23,6 @@ type OrderType = {
   or_delayed: number;
   or_date_reserve: string;
   user_name: string;
-  user_fullname: string;
   paid_total: number;
   remaining: number;
 };
@@ -39,7 +38,6 @@ type PaymentType = {
   or_total: number;
   remaining: number;
   user_name: string;
-  user_fullname: string;
 };
 
 type UserType = {
@@ -278,146 +276,124 @@ export default function OrderReportPage() {
           )}
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
         {/* INTERACTIVE CARDS */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-  {/* Previous Balance */}
-  <div className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-purple-50 border-purple-500">
+          {/* Previous Balance */}
+          <div
 
-    {/* Tooltip */}
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      الرصيد السابق (المبلغ المرحل من الفترة السابقة)
-    </div>
+            className={`rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 
+        ? "bg-purple-50 border-purple-500 scale-[1.01]"
+        : "bg-white border-transparent hover:border-purple-300"
+    }`}
+          >
+            <div className="flex justify-between items-center text-gray-500 text-sm" title="الرصيد السابق">
+              <span>الرصيد السابق</span>
+              <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                افتتاحي
+              </span>
+            </div>
+            <div className="text-4xl font-bold text-purple-600 mt-3">
+              {formatNumber(previousBalance)}
+            </div>
+          </div>
 
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>الرصيد السابق</span>
-      <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        افتتاحي
-      </span>
-    </div>
+          {/* Total Orders */}
+          <div
+            onClick={() => setViewMode("all")}
+            className={`rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 ${viewMode === "all"
+                ? "bg-green-50 border-green-500 scale-[1.01]"
+                : "bg-white border-transparent hover:border-green-300"
+              }`}
+          >
+            <div className="flex justify-between items-center text-gray-500 text-sm" title="إجمالي الطلبات">
+              <span>إجمالي الطلبات</span>
+              <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                العدد: {orders.length}
+              </span>
+            </div>
+            <div className="text-4xl font-bold text-green-600 mt-3">
+              {formatNumber(totalOrdersSum)}
+            </div>
+          </div>
 
-    <div className="text-4xl font-bold text-purple-600 mt-3">
-      {formatNumber(previousBalance)}
-    </div>
-  </div>
+          {/* Payments */}
+          <div
+            onClick={() => setViewMode("payments")}
+            className={`rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 ${viewMode === "payments"
+                ? "bg-blue-50 border-blue-500 scale-[1.01]"
+                : "bg-white border-transparent hover:border-blue-300"
+              }`}
+          >
+            <div className="flex justify-between items-center text-gray-500 text-sm" title="المدفوعات المستلمة">
+              <span>المدفوعات المستلمة</span>
+              <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                العمليات: {payments.length}
+              </span>
+            </div>
+            <div className="text-4xl font-bold text-blue-600 mt-3">
+              {formatNumber(totalPaidSum)}
+            </div>
+          </div>
 
-  {/* Total Orders */}
-  <div onClick={() => setViewMode("all")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-green-300">
+          {/* Remaining */}
+          <div
+            onClick={() => setViewMode("remaining")}
+            className={`rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 ${viewMode === "remaining"
+                ? "bg-red-50 border-red-500 scale-[1.01]"
+                : "bg-white border-transparent hover:border-red-300"
+              }`}
+          >
+            <div className="flex justify-between items-center text-gray-500 text-sm" title="المتبقي = أجمالي الطلبات - المدفوعات ">
+              <span>المتبقي غير المدفوع</span>
+              <span className="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                الطلبات المعلقة: {remainingOrdersList.length}
+              </span>
+            </div>
+            <div className="text-4xl font-bold text-red-600 mt-3">
+              {formatNumber(totalRemainingSum)}
+            </div>
+          </div>
 
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      إجمالي قيمة وعدد الطلبات خلال الفترة
-    </div>
+          {/* Expenses */}
+          <div
+            onClick={() => setViewMode("spend")}
+            className={`rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 ${viewMode === "spend"
+                ? "bg-orange-50 border-orange-500 scale-[1.01]"
+                : "bg-white border-transparent hover:border-orange-300"
+              }`}
+          >
+            <div className="flex justify-between items-center text-gray-500 text-sm" title="المصاريف">
+              <span>المصاريف</span>
+              <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                العمليات: {spend.length}
+              </span>
+            </div>
+            <div className="text-4xl font-bold text-orange-600 mt-3">
+              {formatNumber(totalSpendSum)}
+            </div>
+          </div>
 
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>إجمالي الطلبات</span>
-      <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        العدد: {orders.length}
-      </span>
-    </div>
+          {/* Final Balance */}
+          <div
 
-    <div className="text-4xl font-bold text-green-600 mt-3">
-      {formatNumber(totalOrdersSum)}
-    </div>
-  </div>
+            className={`rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300
+        ? "bg-emerald-50 border-emerald-500 scale-[1.01]"
+        : "bg-white border-transparent hover:border-emerald-300"
+    }`}
+          >
+            <div className="flex justify-between items-center text-gray-500 text-sm" title="الرصيد النهائي = الرصيد السابق + المدفوعات - المصاريف">
+              <span>الرصيد النهائي</span>
+              <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                صافي
+              </span>
+            </div>
+            <div className="text-4xl font-bold text-emerald-600 mt-3">
+              {formatNumber(finalBalance)}
+            </div>
+          </div>
 
-  {/* Payments */}
-  <div onClick={() => setViewMode("payments")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-blue-300">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      المدفوعات التي تم استلامها من الزبائن
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>المدفوعات المستلمة</span>
-      <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        العمليات: {payments.length}
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-blue-600 mt-3">
-      {formatNumber(totalPaidSum)}
-    </div>
-  </div>
-
-  {/* Remaining */}
-  <div onClick={() => setViewMode("remaining")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-red-300">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      المبلغ المتبقي = إجمالي الطلبات - المدفوعات
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>المتبقي غير المدفوع</span>
-      <span className="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        الطلبات المعلقة: {remainingOrdersList.length}
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-red-600 mt-3">
-      {formatNumber(totalRemainingSum)}
-    </div>
-  </div>
-
-  {/* Expenses */}
-  <div onClick={() => setViewMode("spend")} className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-white border-transparent hover:border-orange-300">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      جميع المصاريف المسجلة داخل النظام
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>المصاريف</span>
-      <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        العمليات: {spend.length}
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-orange-600 mt-3">
-      {formatNumber(totalSpendSum)}
-    </div>
-  </div>
-
-  {/* Final Balance */}
-  <div className="relative group rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 p-6 cursor-pointer border-2 transition-all duration-300 bg-emerald-50 border-emerald-500">
-
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-50">
-      الرصيد النهائي = (المبيعات + المدفوعات) - المصاريف
-    </div>
-
-    <div className="flex justify-between items-center text-gray-500 text-sm">
-      <span>الرصيد النهائي</span>
-      <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
-        صافي
-      </span>
-    </div>
-
-    <div className="text-4xl font-bold text-emerald-600 mt-3">
-      {formatNumber(finalBalance)}
-    </div>
-  </div>
-
-</div>
-
-
-
-
-
-
-
-
-
+        </div>
 
         {/* DATA CONTAINER */}
         <div className="bg-white rounded-2xl shadow overflow-hidden">
@@ -473,7 +449,7 @@ export default function OrderReportPage() {
                               <td className="p-4 text-blue-600 font-bold">{formatNumber(item.paid_total)}</td>
                               <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
                               <td className="p-4">{item.or_vip === 1 ? "VIP" : "-"}</td>
-                              <td className="p-4">{item.user_fullname}</td>
+                              <td className="p-4">{item.user_name}</td>
                               <td className="p-4">
                                 <button
                                   onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
@@ -521,7 +497,7 @@ export default function OrderReportPage() {
                             <td className="p-4 text-gray-700 font-medium">{formatNumber(item.or_total)}</td>
                             <td className="p-4 text-blue-600 font-extrabold bg-blue-50/50">{formatNumber(item.pay_total)}</td>
                             <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
-                            <td className="p-4 text-gray-600">{item.user_fullname}</td>
+                            <td className="p-4 text-gray-600">{item.user_name}</td>
                             <td className="p-4">
                               <button
                                 onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
@@ -572,7 +548,7 @@ export default function OrderReportPage() {
                             </td>
 
                             <td className="p-4 font-medium">
-                              {item.sp_detail}
+                              {item.sp_note}
                             </td>
 
                             <td className="p-4 text-orange-600 font-extrabold bg-orange-50/50">
@@ -580,7 +556,7 @@ export default function OrderReportPage() {
                             </td>
 
                             <td className="p-4 text-gray-600">
-                              {item.user_full_name}
+                              {item.user_name}
                             </td>
                           </tr>
                         ))}

@@ -12,20 +12,21 @@ export async function GET(req: NextRequest) {
     const year = searchParams.get("year") || "";
 
     // =========================================================
-    // 1. START DATE (FOR PREVIOUS BALANCE)
+    // 1. DEFINE START DATE (FOR PREVIOUS BALANCE)
     // =========================================================
-    let startDate: string | null = null;
+    let startDate = "";
 
     if (type === "daily" && date) {
       startDate = `${date} 00:00:00`;
-    } else if (type === "monthly" && month) {
-      startDate = `${month}-01 00:00:00`;
-    } else if (type === "yearly" && year) {
-      startDate = `${year}-01-01 00:00:00`;
     }
 
-    // fallback safety (IMPORTANT)
-    if (!startDate) startDate = "1970-01-01 00:00:00";
+    if (type === "monthly" && month) {
+      startDate = `${month}-01 00:00:00`;
+    }
+
+    if (type === "yearly" && year) {
+      startDate = `${year}-01-01 00:00:00`;
+    }
 
     // =========================================================
     // 2. ORDERS (CURRENT PERIOD)
@@ -58,9 +59,9 @@ export async function GET(req: NextRequest) {
         o.or_total,
         o.or_cus_name,
         o.or_cus_phone,
+        o.or_cus_phone2,
         o.or_vip,
         u.user_name,
-        u.user_fullname,
         COALESCE(p.total_paid,0) AS paid_total,
         (o.or_total - COALESCE(p.total_paid,0)) AS remaining
       FROM \`order\` o
@@ -109,7 +110,6 @@ export async function GET(req: NextRequest) {
         o.or_total,
         o.or_cus_name,
         u.user_name,
-        u.user_fullname,
         (o.or_total - COALESCE(p_all.total_paid,0)) AS remaining
       FROM payment p
       INNER JOIN \`order\` o ON p.or_id = o.or_id
@@ -153,10 +153,8 @@ export async function GET(req: NextRequest) {
         s.sp_id,
         s.sp_total,
         s.sp_date,
-        s.sp_detail,
-         u.user_fullname
+        s.sp_detail
       FROM spend s
-      LEFT JOIN user u ON s.user_id = u.user_id
       ${spendWhere}
       ORDER BY s.sp_date DESC
       `,
@@ -164,12 +162,12 @@ export async function GET(req: NextRequest) {
     );
 
     // =========================================================
-    // 5. PREVIOUS BALANCE (SAFE FIX)
+    // 5. PREVIOUS BALANCE (IMPORTANT)
     // =========================================================
 
-    const [prevPayRows]: any = await db.execute(
+    const [prevPayments]: any = await db.execute(
       `
-      SELECT COALESCE(SUM(pay_total),0) AS total
+      SELECT COALESCE(SUM(pay_total),0) as total
       FROM payment
       WHERE br_id = ?
       AND pay_date < ?
@@ -177,9 +175,9 @@ export async function GET(req: NextRequest) {
       [br_id, startDate]
     );
 
-    const [prevSpendRows]: any = await db.execute(
+    const [prevSpend]: any = await db.execute(
       `
-      SELECT COALESCE(SUM(sp_total),0) AS total
+      SELECT COALESCE(SUM(sp_total),0) as total
       FROM spend
       WHERE br_id = ?
       AND sp_date < ?
@@ -187,25 +185,22 @@ export async function GET(req: NextRequest) {
       [br_id, startDate]
     );
 
-    const prevPayTotal = prevPayRows?.[0]?.total || 0;
-    const prevSpendTotal = prevSpendRows?.[0]?.total || 0;
-
-    const previousBalance = prevPayTotal - prevSpendTotal;
+    const previousBalance =
+      prevPayments[0][0].total - prevSpend[0][0].total;
 
     // =========================================================
     // RESPONSE
     // =========================================================
     return NextResponse.json({
       success: true,
-      order: orders || [],
-      payments: payments || [],
-      spend: spend || [],
+      order: orders,
+      payments,
+      spend,
       previousBalance,
     });
 
   } catch (error) {
-    console.error("API ERROR:", error);
-
+    console.error(error);
     return NextResponse.json({
       success: false,
       message: "Server error",

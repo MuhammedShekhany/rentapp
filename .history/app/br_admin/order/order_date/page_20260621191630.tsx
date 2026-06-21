@@ -2,12 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  CheckCircle2,
-  CookingPot,
-  PackageCheck,
-  PackageX,
-} from "lucide-react";
 
 type OrderType = {
   or_id: number;
@@ -26,7 +20,6 @@ type OrderType = {
   br_id: string;
   paid_total: number;
   remaining: number;
-  or_preparing: number;
 };
 
 type UserType = {
@@ -44,7 +37,7 @@ export default function OrderPage() {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTop, setShowTop] = useState(false);
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
+
   const [search, setSearch] = useState("");
 
   const [fromDate, setFromDate] = useState("");
@@ -56,19 +49,15 @@ export default function OrderPage() {
     Number(num || 0).toLocaleString("en-US");
 
   // ======================
-  // LOAD ORDERS (With background option)
+  // LOAD ORDERS
   // ======================
   const loadOrders = async (
     branchId: string,
     from?: string,
-    to?: string,
-    isBackground = false
+    to?: string
   ) => {
     try {
-      // Avoid destroying the DOM table structure during item status toggles
-      if (!isBackground) {
-        setLoading(true);
-      }
+      setLoading(true);
 
       let url = `/api/order/date_range?br_id=${branchId}`;
 
@@ -81,17 +70,6 @@ export default function OrderPage() {
 
       if (data?.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
-
-        // --- RESTORE SCROLL POSITION ---
-        setTimeout(() => {
-          const savedScrollY = sessionStorage.getItem("order_page_scroll");
-          if (savedScrollY) {
-            window.scrollTo(0, parseInt(savedScrollY, 10));
-            sessionStorage.removeItem("order_page_scroll");
-          }
-        }, 50);
-        // -------------------------------
-
       } else {
         setOrders([]);
       }
@@ -146,61 +124,44 @@ export default function OrderPage() {
   }, [user, fromDate, toDate]);
 
   // ======================
-  // SCROLL BUTTON
+  // TRACK & SAVE WINDOW SCROLL
   // ======================
   useEffect(() => {
-    const onScroll = () => {
+    const handleWindowScroll = () => {
       setShowTop(window.scrollY > 300);
+      
+      // Save exact coordinates to sessionStorage
+      sessionStorage.setItem("orders_scroll_y", String(window.scrollY));
     };
 
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleWindowScroll);
   }, []);
 
   // ======================
-  // TOGGLE PREPARING (Fixed Scroll)
+  // RESTORE SCROLL POSITION (FIGHT NEXT.JS RESET)
   // ======================
-  const togglePreparing = async (or_id: number, current: number) => {
-    // 1. Immediately track exactly where the user is looking
-    const currentScrollY = window.scrollY;
-    sessionStorage.setItem("order_page_scroll", currentScrollY.toString());
+  useEffect(() => {
+    if (loading || orders.length === 0) return;
 
-    try {
-      setUpdatingId(or_id);
+    const savedScroll = sessionStorage.getItem("orders_scroll_y");
+    if (!savedScroll) return;
 
-      const res = await fetch(`/api/order/${or_id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          or_preparing: current == 1 ? 0 : 1,
-        }),
-      });
+    const targetScroll = Number(savedScroll);
 
-      const data = await res.json();
-
-      if (data.success) {
-        // 2. Pass true to keep the table elements on screen during reload
-        await loadOrders(user!.br_id, fromDate, toDate, true);
-      } else {
-        alert(data.message || "فشل التحديث");
+    // We execute multiple intervals to override Next.js trying to reset scroll to 0
+    let count = 0;
+    const scrollInterval = setInterval(() => {
+      window.scrollTo(0, targetScroll);
+      count++;
+      
+      if (count > 10 || window.scrollY === targetScroll) {
+        clearInterval(scrollInterval);
       }
-    } catch (error) {
-      console.error(error);
-      alert("خطأ في السيرفر");
-    } finally {
-      setUpdatingId(null);
-      // 3. Re-apply instantly if any component render lifecycle tried shifting it
-      window.scrollTo(0, currentScrollY);
-    }
-  };
+    }, 30);
 
-  // ======================
-  // NAVIGATION HANDLER (SAVE SCROLL)
-  // ======================
-  const handleDetailNavigation = (or_id: number) => {
-    sessionStorage.setItem("order_page_scroll", window.scrollY.toString());
-    router.push(`/br_admin/order/detail/${or_id}`);
-  };
+    return () => clearInterval(scrollInterval);
+  }, [loading, orders.length]);
 
   // ======================
   // DELETE
@@ -307,9 +268,7 @@ export default function OrderPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-
               <table className="w-full text-right text-sm">
-
                 <thead className="sticky top-0 z-20 bg-gray-50 border-b">
                   <tr>
                     <th className="p-4">رقم</th>
@@ -326,82 +285,46 @@ export default function OrderPage() {
 
                 <tbody>
                   {filteredOrders.map((item) => (
-                    <>
-                      <tr key={item.or_id} className="hover:bg-gray-50">
-                        <td className="p-4 font-semibold">#{item.or_no}</td>
-                        <td className="p-4">{item.or_cus_name || "-"}</td>
-                        <td className="p-4">{item.or_cus_phone || "-"}</td>
+                    <tr key={item.or_id} className="border-b hover:bg-gray-50">
+                      <td className="p-4 font-semibold">#{item.or_no}</td>
+                      <td className="p-4">{item.or_cus_name || "-"}</td>
+                      <td className="p-4">{item.or_cus_phone || "-"}</td>
 
-                        <td className="p-4 text-blue-700 font-bold">
-                          {formatNumber(item.or_total)}
-                        </td>
+                      <td className="p-4 text-blue-700 font-bold">
+                        {formatNumber(item.or_total)}
+                      </td>
 
-                        <td className="p-4 text-green-700 font-bold">
-                          {formatNumber(item.paid_total)}
-                        </td>
+                      <td className="p-4 text-green-700 font-bold">
+                        {formatNumber(item.paid_total)}
+                      </td>
 
-                        <td className="p-4 text-red-700 font-bold">
-                          {formatNumber(item.remaining)}
-                        </td>
+                      <td className="p-4 text-red-700 font-bold">
+                        {formatNumber(item.remaining)}
+                      </td>
 
-                        <td className="p-4">
-                          {item.or_vip == 1 ? "VIP" : "-"}
-                        </td>
+                      <td className="p-4">
+                        {item.or_vip == 1 ? "VIP" : "-"}
+                      </td>
 
-                        <td className="p-4">
-                          {new Date(item.or_date).toLocaleString("en-GB")}
-                        </td>
+                      <td className="p-4">
+                        {new Date(item.or_date).toLocaleString("en-GB")}
+                      </td>
 
-                        <td className="p-4">{item.user_fullname}</td>
-                      </tr>
-
-                      <tr className="border-b bg-gray-50">
-
-                        <td className="p-4">
-                          {item.or_preparing == 1 ? (
-                            <span className="flex items-center gap-2 text-green-600 font-bold">
-                              <CheckCircle2 size={18} /> جاهز
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-2 text-orange-600 font-bold">
-                              <CookingPot size={18} /> قيد التحضير
-                            </span>
-                          )}
-                        </td>
-                        <td colSpan={16} className="p-3">
-                          <div className="flex gap-2">
-
-                            <button
-                              disabled={updatingId === item.or_id}
-                              onClick={() =>
-                                togglePreparing(item.or_id, item.or_preparing)
-                              }
-                              className={`px-4 py-2 rounded-lg text-white ${item.or_preparing == 1
-                                  ? "bg-green-600 hover:bg-green-700"
-                                  : "bg-red-600 hover:bg-red-700"
-                                }`}
-                            >
-                              {updatingId === item.or_id
-                                ? "جاري التحديث..."
-                                : item.or_preparing == 1
-                                  ? "جاهز"
-                                  : "غير جاهز"}
-                            </button>
-
-                            <button
-                              onClick={() => handleDetailNavigation(item.or_id)}
-                              className="bg-purple-600 text-white px-4 py-2 rounded-lg"
-                            >
-                              تفاصيل
-                            </button>
-
-                          </div>
-                        </td>
-                      </tr>
-                    </>
+                      <td className="p-4">{item.user_fullname}</td>
+                      
+                      <td className="p-4">
+                        <button
+                          onClick={() =>
+                            router.push(`/br_admin/order/detail/${item.or_id}`)
+                          }
+                          className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+                        >
+                          تفاصيل
+                        </button>
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
-
               </table>
             </div>
           )}

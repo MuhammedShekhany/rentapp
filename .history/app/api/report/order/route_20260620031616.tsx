@@ -60,7 +60,6 @@ export async function GET(req: NextRequest) {
         o.or_cus_phone,
         o.or_vip,
         u.user_name,
-        u.user_fullname,
         COALESCE(p.total_paid,0) AS paid_total,
         (o.or_total - COALESCE(p.total_paid,0)) AS remaining
       FROM \`order\` o
@@ -109,7 +108,6 @@ export async function GET(req: NextRequest) {
         o.or_total,
         o.or_cus_name,
         u.user_name,
-        u.user_fullname,
         (o.or_total - COALESCE(p_all.total_paid,0)) AS remaining
       FROM payment p
       INNER JOIN \`order\` o ON p.or_id = o.or_id
@@ -153,10 +151,8 @@ export async function GET(req: NextRequest) {
         s.sp_id,
         s.sp_total,
         s.sp_date,
-        s.sp_detail,
-         u.user_fullname
+        s.sp_detail
       FROM spend s
-      LEFT JOIN user u ON s.user_id = u.user_id
       ${spendWhere}
       ORDER BY s.sp_date DESC
       `,

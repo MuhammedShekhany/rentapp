@@ -149,6 +149,13 @@ export default function AdminPage() {
         color: "from-teal-500 to-cyan-600",
       },
       {
+        title: "تقارير المالية",
+        desc: "عرض التقارير",
+        path: `${basePath}/report/finance_total`,
+        icon: <ClipboardCheck size={28} />,
+        color: "from-teal-500 to-cyan-600",
+      },
+      {
         title: "الطلبات المؤجل",
         desc: "إدارة الطلبات المؤجل",
         path: `${basePath}/order/delay`,

@@ -154,7 +154,7 @@ export async function GET(req: NextRequest) {
         s.sp_total,
         s.sp_date,
         s.sp_detail,
-         u.user_fullname
+         u.user_fullname,
       FROM spend s
       LEFT JOIN user u ON s.user_id = u.user_id
       ${spendWhere}
