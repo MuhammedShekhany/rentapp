@@ -438,9 +438,6 @@ const finalBalance = useMemo(() => {
                             <td className="p-4 text-xs text-gray-600">
                               {new Date(item.or_date).toLocaleDateString("en-GB")}
                             </td>
-                            <td className="p-4 text-xs text-gray-600">
-                              {new Date(item.pay_date).toLocaleDateString("en-GB")}
-                            </td>
                             <td className="p-4 font-semibold">{item.or_cus_name}</td>
                             <td className="p-4 text-gray-700 font-medium">{formatNumber(item.or_total)}</td>
                             <td className="p-4 text-blue-600 font-extrabold bg-blue-50/50">{formatNumber(item.pay_total)}</td>

@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
       FROM \`order\` o
       LEFT JOIN user u ON o.user_id = u.user_id
       LEFT JOIN (
-        SELECT or_id, SUM(pay_total) AS total_paid
+        SELECT or_id, SUM(pay_total) AS total_paid,pay_date
         FROM payment
         GROUP BY or_id
       ) p ON o.or_id = p.or_id

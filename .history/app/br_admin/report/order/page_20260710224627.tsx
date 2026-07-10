@@ -26,6 +26,7 @@ type OrderType = {
   user_fullname: string;
   paid_total: number;
   remaining: number;
+   pay_date: string;
 };
 
 type PaymentType = {
@@ -505,6 +506,7 @@ export default function OrderReportPage() {
                           <tr>
                             <th className="p-4 text-right">رقم الطلب</th>
                           <th className="p-4 text-right">تاريخ الطلب</th>
+                          <th className="p-4 text-right">تاريخ الدفعة</th>
                             <th className="p-4 text-right">الزبون</th>
                             <th className="p-4 text-right">الهاتف</th>
                             <th className="p-4 text-right">الإجمالي</th>
@@ -523,6 +525,9 @@ export default function OrderReportPage() {
                             <td className="p-4 text-xs text-gray-600">
                               {new Date(item.or_date).toLocaleDateString("en-GB")}
                             </td>
+                            <td className="p-4 text-xs text-gray-600">
+                              {new Date(item.pay_date).toLocaleDateString("en-GB")}
+                            </td>
                               <td className="p-4 font-semibold">{item.or_cus_name}</td>
                               <td className="p-4">{item.or_cus_phone}</td>
                               <td className="p-4 text-green-600 font-bold">{formatNumber(item.or_total)}</td>
@@ -531,22 +536,12 @@ export default function OrderReportPage() {
                               <td className="p-4">{item.or_vip === 1 ? "VIP" : "-"}</td>
                               <td className="p-4">{item.user_fullname}</td>
                               <td className="p-4">
-                                <div className="flex flex-row flex-nowrap gap-2 items-center justify-start">
-                                 <button
-                              onClick={() =>
-                                router.push(`/br_admin/order/payment/${item.or_id}`)
-                              }
-                              className="bg-amber-500 text-white px-4 py-2 rounded-lg"
-                            >
-                              الدفع
-                            </button>
                                 <button
                                   onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
                                   className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                                 >
                                   تفاصيل
                                 </button>
-                                </div>
                               </td>
                             </tr>
                           ))}
@@ -594,22 +589,12 @@ export default function OrderReportPage() {
                             <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
                             <td className="p-4 text-gray-600">{item.user_fullname}</td>
                             <td className="p-4">
-                             <div className="flex flex-row flex-nowrap gap-2 items-center justify-start">
-                                 <button
-                              onClick={() =>
-                                router.push(`/br_admin/order/payment/${item.or_id}`)
-                              }
-                              className="bg-amber-500 text-white px-4 py-2 rounded-lg"
-                            >
-                              الدفع
-                            </button>
-                                <button
-                                  onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
-                                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                                >
-                                  تفاصيل
-                                </button>
-                                </div>
+                              <button
+                                onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
+                                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                              >
+                                تفاصيل
+                              </button>
                             </td>
                           </tr>
                         ))}

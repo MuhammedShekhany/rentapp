@@ -438,10 +438,10 @@ export default function OrderReportPage() {
             <div className="p-10 text-center">جاري التحميل...</div>
           ) : (
             <>
-              {/* VIEW: ALL ORDERS */}
-              {(viewMode === "all" ) && (
+              {/* VIEW: ALL ORDERS OR REMAINING ORDERS */}
+              {(viewMode === "all" || viewMode === "remaining") && (
                 (() => {
-                  const targetList =  orders ;
+                  const targetList = viewMode === "all" ? orders : remainingOrdersList;
                   return targetList.length === 0 ? (
                     <div className="p-10 text-center text-gray-500">لا توجد سجلات طلبات مخصصة لهذه الفترة الزمانية</div>
                   ) : (
@@ -492,71 +492,6 @@ export default function OrderReportPage() {
                 })()
               )}
 
-              {/* VIEW:  REMAINING ORDERS */}
-              {( viewMode === "remaining") && (
-                (() => {
-                  const targetList = remainingOrdersList;
-                  return targetList.length === 0 ? (
-                    <div className="p-10 text-center text-gray-500">لا توجد سجلات طلبات مخصصة لهذه الفترة الزمانية</div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead className="bg-gray-100">
-                          <tr>
-                            <th className="p-4 text-right">رقم الطلب</th>
-                          <th className="p-4 text-right">تاريخ الطلب</th>
-                            <th className="p-4 text-right">الزبون</th>
-                            <th className="p-4 text-right">الهاتف</th>
-                            <th className="p-4 text-right">الإجمالي</th>
-                            <th className="p-4 text-right">المدفوع</th>
-                            <th className="p-4 text-right">المتبقي</th>
-                            <th className="p-4 text-right">VIP</th>
-                            <th className="p-4 text-right">المستخدم</th>
-                            <th className="p-4 text-right">الإجراء</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {targetList.map((item) => (
-                            <tr key={item.or_id} className="border-b hover:bg-gray-50">
-                              <td className="p-4 font-bold">#{item.or_no}</td>
-                            
-                            <td className="p-4 text-xs text-gray-600">
-                              {new Date(item.or_date).toLocaleDateString("en-GB")}
-                            </td>
-                              <td className="p-4 font-semibold">{item.or_cus_name}</td>
-                              <td className="p-4">{item.or_cus_phone}</td>
-                              <td className="p-4 text-green-600 font-bold">{formatNumber(item.or_total)}</td>
-                              <td className="p-4 text-blue-600 font-bold">{formatNumber(item.paid_total)}</td>
-                              <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
-                              <td className="p-4">{item.or_vip === 1 ? "VIP" : "-"}</td>
-                              <td className="p-4">{item.user_fullname}</td>
-                              <td className="p-4">
-                                <div className="flex flex-row flex-nowrap gap-2 items-center justify-start">
-                                 <button
-                              onClick={() =>
-                                router.push(`/br_admin/order/payment/${item.or_id}`)
-                              }
-                              className="bg-amber-500 text-white px-4 py-2 rounded-lg"
-                            >
-                              الدفع
-                            </button>
-                                <button
-                                  onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
-                                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                                >
-                                  تفاصيل
-                                </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  );
-                })()
-              )}
-
               {/* VIEW: PAYMENTS (Read from payments dynamic state variable) */}
               {viewMode === "payments" && (
                 payments.length === 0 ? (
@@ -594,22 +529,12 @@ export default function OrderReportPage() {
                             <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
                             <td className="p-4 text-gray-600">{item.user_fullname}</td>
                             <td className="p-4">
-                             <div className="flex flex-row flex-nowrap gap-2 items-center justify-start">
-                                 <button
-                              onClick={() =>
-                                router.push(`/br_admin/order/payment/${item.or_id}`)
-                              }
-                              className="bg-amber-500 text-white px-4 py-2 rounded-lg"
-                            >
-                              الدفع
-                            </button>
-                                <button
-                                  onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
-                                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                                >
-                                  تفاصيل
-                                </button>
-                                </div>
+                              <button
+                                onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
+                                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                              >
+                                تفاصيل
+                              </button>
                             </td>
                           </tr>
                         ))}

@@ -531,7 +531,6 @@ export default function OrderReportPage() {
                               <td className="p-4">{item.or_vip === 1 ? "VIP" : "-"}</td>
                               <td className="p-4">{item.user_fullname}</td>
                               <td className="p-4">
-                                <div className="flex flex-row flex-nowrap gap-2 items-center justify-start">
                                  <button
                               onClick={() =>
                                 router.push(`/br_admin/order/payment/${item.or_id}`)
@@ -546,7 +545,6 @@ export default function OrderReportPage() {
                                 >
                                   تفاصيل
                                 </button>
-                                </div>
                               </td>
                             </tr>
                           ))}
@@ -594,22 +592,12 @@ export default function OrderReportPage() {
                             <td className="p-4 text-red-600 font-bold">{formatNumber(item.remaining)}</td>
                             <td className="p-4 text-gray-600">{item.user_fullname}</td>
                             <td className="p-4">
-                             <div className="flex flex-row flex-nowrap gap-2 items-center justify-start">
-                                 <button
-                              onClick={() =>
-                                router.push(`/br_admin/order/payment/${item.or_id}`)
-                              }
-                              className="bg-amber-500 text-white px-4 py-2 rounded-lg"
-                            >
-                              الدفع
-                            </button>
-                                <button
-                                  onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
-                                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                                >
-                                  تفاصيل
-                                </button>
-                                </div>
+                              <button
+                                onClick={() => router.push(`/br_admin/order/detail/${item.or_id}`)}
+                                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                              >
+                                تفاصيل
+                              </button>
                             </td>
                           </tr>
                         ))}

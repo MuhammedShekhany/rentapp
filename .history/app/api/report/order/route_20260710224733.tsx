@@ -59,6 +59,7 @@ export async function GET(req: NextRequest) {
         o.or_cus_name,
         o.or_cus_phone,
         o.or_vip,
+        p.pay_date,
         u.user_name,
         u.user_fullname,
         COALESCE(p.total_paid,0) AS paid_total,
