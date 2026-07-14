@@ -33,7 +33,7 @@ type CardItem = {
   color: string;
 };
 
-export default function UserPage() {
+export default function AdminPage() {
   const router = useRouter();
   const [user, setUser] = useState<UserType | null>(null);
 
