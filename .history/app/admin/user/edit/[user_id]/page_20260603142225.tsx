@@ -230,7 +230,6 @@ export default function EditUserPage() {
             <option value="br_admin">مدير فرع</option>
             <option value="br_ass">معاون فرع</option>
             <option value="br_user">مستخدم</option>
-            <option value="br_maker">الخياط</option>
           </select>
 
           {/* MESSAGE */}

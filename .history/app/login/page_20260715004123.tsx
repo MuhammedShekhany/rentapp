@@ -88,7 +88,7 @@ function LoginContent() {
       else if (userData.user_role === "br_admin") router.push("/br_admin");
       else if (userData.user_role === "br_ass") router.push("/br_ass");
       else if (userData.user_role === "br_user") router.push("/br_user");
-      else if (userData.user_role === "br_maker") router.push("/br_maker");
+      else if (userData.user_role === "br_maker") router.push("/br_user");
       else setMessage("لا يوجد صلاحية لهذا المستخدم");
     } catch (error) {
       console.error("LOGIN ERROR:", error);
