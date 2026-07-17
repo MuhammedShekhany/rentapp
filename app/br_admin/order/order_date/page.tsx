@@ -319,7 +319,8 @@ export default function OrderPage() {
                     <th className="p-4">المدفوع</th>
                     <th className="p-4">المتبقي</th>
                     <th className="p-4">VIP</th>
-                    <th className="p-4">التاريخ</th>
+                    <th className="p-4"> التاريخ الطلب</th>
+                    <th className="p-4">تاريخ الحجز </th>
                     <th className="p-4">المستخدم</th>
                   </tr>
                 </thead>
@@ -343,13 +344,18 @@ export default function OrderPage() {
                         <td className="p-4 text-red-700 font-bold">
                           {formatNumber(item.remaining)}
                         </td>
-
+                      
                         <td className="p-4">
                           {item.or_vip == 1 ? "VIP" : "-"}
                         </td>
 
                         <td className="p-4">
                           {new Date(item.or_date).toLocaleString("en-GB")}
+                        </td>
+                        <td className="p-4 whitespace-nowrap">
+                          {item.or_date_reserve
+                            ? new Date(item.or_date_reserve).toLocaleDateString("en-GB")
+                            : "-"}
                         </td>
 
                         <td className="p-4">{item.user_fullname}</td>

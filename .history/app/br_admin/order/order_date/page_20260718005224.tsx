@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import {
+  CheckCircle2,
+  CookingPot,
+  PackageCheck,
+  PackageX,
+} from "lucide-react";
 
 type OrderType = {
   or_id: number;
@@ -20,6 +26,7 @@ type OrderType = {
   br_id: string;
   paid_total: number;
   remaining: number;
+  or_preparing: number;
 };
 
 type UserType = {
@@ -33,12 +40,11 @@ type UserType = {
 
 export default function OrderPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTop, setShowTop] = useState(false);
-
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
 
   const [fromDate, setFromDate] = useState("");
@@ -50,15 +56,19 @@ export default function OrderPage() {
     Number(num || 0).toLocaleString("en-US");
 
   // ======================
-  // LOAD ORDERS
+  // LOAD ORDERS (With background option)
   // ======================
   const loadOrders = async (
     branchId: string,
     from?: string,
-    to?: string
+    to?: string,
+    isBackground = false
   ) => {
     try {
-      setLoading(true);
+      // Avoid destroying the DOM table structure during item status toggles
+      if (!isBackground) {
+        setLoading(true);
+      }
 
       let url = `/api/order/date_range?br_id=${branchId}`;
 
@@ -71,6 +81,17 @@ export default function OrderPage() {
 
       if (data?.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
+
+        // --- RESTORE SCROLL POSITION ---
+        setTimeout(() => {
+          const savedScrollY = sessionStorage.getItem("order_page_scroll");
+          if (savedScrollY) {
+            window.scrollTo(0, parseInt(savedScrollY, 10));
+            sessionStorage.removeItem("order_page_scroll");
+          }
+        }, 50);
+        // -------------------------------
+
       } else {
         setOrders([]);
       }
@@ -83,7 +104,7 @@ export default function OrderPage() {
   };
 
   // ======================
-  // FIRST LOAD (RESTORE FROM URL)
+  // FIRST LOAD (RESTORE FROM LOCALSTORAGE)
   // ======================
   useEffect(() => {
     const session = localStorage.getItem("userSession");
@@ -96,30 +117,27 @@ export default function OrderPage() {
     const parsedUser: UserType = JSON.parse(session);
     setUser(parsedUser);
 
-    const urlFrom = searchParams.get("from");
-    const urlTo = searchParams.get("to");
+    const savedFrom = localStorage.getItem("order_from");
+    const savedTo = localStorage.getItem("order_to");
 
     const today = new Date().toISOString().slice(0, 10);
 
-    setFromDate(urlFrom || today);
-    setToDate(urlTo || today);
-  }, [router, searchParams]);
+    setFromDate(savedFrom || today);
+    setToDate(savedTo || today);
+  }, [router]);
 
   // ======================
-  // KEEP URL SYNCED
+  // SAVE DATE TO LOCALSTORAGE
   // ======================
   useEffect(() => {
-    if (!fromDate || !toDate) return;
-
-    const params = new URLSearchParams(window.location.search);
-    params.set("from", fromDate);
-    params.set("to", toDate);
-
-    router.replace(`?${params.toString()}`);
+    if (fromDate && toDate) {
+      localStorage.setItem("order_from", fromDate);
+      localStorage.setItem("order_to", toDate);
+    }
   }, [fromDate, toDate]);
 
   // ======================
-  // RELOAD DATA
+  // RELOAD ON DATE CHANGE
   // ======================
   useEffect(() => {
     if (user?.br_id && fromDate && toDate) {
@@ -138,6 +156,51 @@ export default function OrderPage() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // ======================
+  // TOGGLE PREPARING (Fixed Scroll)
+  // ======================
+  const togglePreparing = async (or_id: number, current: number) => {
+    // 1. Immediately track exactly where the user is looking
+    const currentScrollY = window.scrollY;
+    sessionStorage.setItem("order_page_scroll", currentScrollY.toString());
+
+    try {
+      setUpdatingId(or_id);
+
+      const res = await fetch(`/api/order/${or_id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          or_preparing: current == 1 ? 0 : 1,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // 2. Pass true to keep the table elements on screen during reload
+        await loadOrders(user!.br_id, fromDate, toDate, true);
+      } else {
+        alert(data.message || "فشل التحديث");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("خطأ في السيرفر");
+    } finally {
+      setUpdatingId(null);
+      // 3. Re-apply instantly if any component render lifecycle tried shifting it
+      window.scrollTo(0, currentScrollY);
+    }
+  };
+
+  // ======================
+  // NAVIGATION HANDLER (SAVE SCROLL)
+  // ======================
+  const handleDetailNavigation = (or_id: number) => {
+    sessionStorage.setItem("order_page_scroll", window.scrollY.toString());
+    router.push(`/br_admin/order/detail/${or_id}`);
+  };
 
   // ======================
   // DELETE
@@ -197,7 +260,15 @@ export default function OrderPage() {
         </div>
 
         {/* SEARCH + DATE */}
-        <div className="bg-white p-4 rounded-xl shadow mb-4 flex gap-2 flex-col md:flex-row">
+        <div className="bg-white p-4 rounded-xl shadow mb-4 flex flex-col md:flex-row md:items-center gap-3">
+
+          {/* TOTAL ORDERS CARD */}
+          <div className="bg-white px-4 py-2 rounded-xl shadow flex-shrink-0">
+            <p className="text-gray-500 text-xs">إجمالي الطلبات</p>
+            <p className="text-xl font-bold text-blue-700">
+              {filteredOrders.length}
+            </p>
+          </div>
 
           <input
             type="text"
@@ -220,6 +291,7 @@ export default function OrderPage() {
             onChange={(e) => setToDate(e.target.value)}
             className="border p-2 rounded-lg"
           />
+
         </div>
 
         {/* TABLE */}
@@ -247,7 +319,8 @@ export default function OrderPage() {
                     <th className="p-4">المدفوع</th>
                     <th className="p-4">المتبقي</th>
                     <th className="p-4">VIP</th>
-                    <th className="p-4">التاريخ</th>
+                    <th className="p-4"> التاريخ الطلب</th>
+                    <th className="p-4">تاريخ الحجز </th>
                     <th className="p-4">المستخدم</th>
                   </tr>
                 </thead>
@@ -256,7 +329,6 @@ export default function OrderPage() {
                   {filteredOrders.map((item) => (
                     <>
                       <tr key={item.or_id} className="hover:bg-gray-50">
-
                         <td className="p-4 font-semibold">#{item.or_no}</td>
                         <td className="p-4">{item.or_cus_name || "-"}</td>
                         <td className="p-4">{item.or_cus_phone || "-"}</td>
@@ -272,7 +344,7 @@ export default function OrderPage() {
                         <td className="p-4 text-red-700 font-bold">
                           {formatNumber(item.remaining)}
                         </td>
-
+                      
                         <td className="p-4">
                           {item.or_vip == 1 ? "VIP" : "-"}
                         </td>
@@ -280,20 +352,56 @@ export default function OrderPage() {
                         <td className="p-4">
                           {new Date(item.or_date).toLocaleString("en-GB")}
                         </td>
+                        <td className="p-4 whitespace-nowrap">
+                          {item.or_date_reserve
+                            ? new Date(item.or_date_reserve).toLocaleDateString("en-GB")
+                            : "-"}
+                        </td>
 
                         <td className="p-4">{item.user_fullname}</td>
                       </tr>
 
                       <tr className="border-b bg-gray-50">
-                        <td colSpan={9} className="p-3">
-                          <button
-                            onClick={() =>
-                              router.push(`/br_admin/order/print/${item.or_id}`)
-                            }
-                            className="bg-purple-600 text-white px-4 py-2 rounded-lg"
-                          >
-                            تفاصيل
-                          </button>
+
+                        <td className="p-4">
+                          {item.or_preparing == 1 ? (
+                            <span className="flex items-center gap-2 text-green-600 font-bold">
+                              <CheckCircle2 size={18} /> جاهز
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-2 text-orange-600 font-bold">
+                              <CookingPot size={18} /> قيد التحضير
+                            </span>
+                          )}
+                        </td>
+                        <td colSpan={16} className="p-3">
+                          <div className="flex gap-2">
+
+                            <button
+                              disabled={updatingId === item.or_id}
+                              onClick={() =>
+                                togglePreparing(item.or_id, item.or_preparing)
+                              }
+                              className={`px-4 py-2 rounded-lg text-white ${item.or_preparing == 1
+                                  ? "bg-green-600 hover:bg-green-700"
+                                  : "bg-red-600 hover:bg-red-700"
+                                }`}
+                            >
+                              {updatingId === item.or_id
+                                ? "جاري التحديث..."
+                                : item.or_preparing == 1
+                                  ? "جاهز"
+                                  : "غير جاهز"}
+                            </button>
+                          
+                            <button
+                              onClick={() => handleDetailNavigation(item.or_id)}
+                              className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+                            >
+                              تفاصيل
+                            </button>
+
+                          </div>
                         </td>
                       </tr>
                     </>
