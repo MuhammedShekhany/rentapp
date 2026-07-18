@@ -67,6 +67,7 @@ export default function AddOrderPage() {
 
 
 
+
     useEffect(() => {
         const session = localStorage.getItem("userSession");
         if (!session) return router.push("/login");
@@ -118,7 +119,7 @@ export default function AddOrderPage() {
 
 
     const formatIraqPhone = (value: string) => {
-        const digits = value.replace(/\D/g, "").slice(0, 11); // remove non-numbers
+        const digits = value.replace(/\D/g, ""); // remove non-numbers
 
         const part1 = digits.slice(0, 4);
         const part2 = digits.slice(4, 7);
@@ -223,6 +224,7 @@ export default function AddOrderPage() {
 
     const handleSave = async () => {
 
+        console.log(formatIraqPhone("07701244448"));
         if (!or_date || !user_id || !br_id || details.length === 0)
             return alert("يرجى تعبئة جميع الحقول وإضافة منتج واحد على الأقل");
         setLoading(true);
@@ -441,9 +443,7 @@ export default function AddOrderPage() {
                                         <input
                                             placeholder="07xx-xxx-xxxx"
                                             value={formatIraqPhone(or_cus_phone)}
-                                            onChange={(e) => {
-        setOrCusPhone(e.target.value.replace(/\D/g, "").slice(0, 11));
-    }}
+                                            onChange={(e) => setOrCusPhone(e.target.value.replace(/\D/g, ""))}
                                             style={s.receiptInput}
                                             className="rinp"
                                         />
@@ -463,7 +463,7 @@ export default function AddOrderPage() {
                                         <input
                                             placeholder="07xx-xxx-xxxx"
                                             value={formatIraqPhone(or_cus_phone2)}
-                                            onChange={(e) => setOrCusPhone2(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                                            onChange={(e) => setOrCusPhone2(e.target.value.replace(/\D/g, ""))}
                                             style={s.receiptInput}
                                             className="rinp"
                                         />

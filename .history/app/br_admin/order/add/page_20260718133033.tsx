@@ -65,6 +65,9 @@ export default function AddOrderPage() {
     const [editingPriceIndex, setEditingPriceIndex] = useState<number | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+useEffect(() => {
+    console.log("or_cus_phone =", or_cus_phone);
+}, [or_cus_phone]);
 
 
     useEffect(() => {
@@ -442,7 +445,9 @@ export default function AddOrderPage() {
                                             placeholder="07xx-xxx-xxxx"
                                             value={formatIraqPhone(or_cus_phone)}
                                             onChange={(e) => {
-        setOrCusPhone(e.target.value.replace(/\D/g, "").slice(0, 11));
+        console.log("Raw:", e.target.value);
+        console.log("Digits:", e.target.value.replace(/\D/g, ""));
+        setOrCusPhone(e.target.value.replace(/\D/g, ""));
     }}
                                             style={s.receiptInput}
                                             className="rinp"
@@ -463,7 +468,7 @@ export default function AddOrderPage() {
                                         <input
                                             placeholder="07xx-xxx-xxxx"
                                             value={formatIraqPhone(or_cus_phone2)}
-                                            onChange={(e) => setOrCusPhone2(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                                            onChange={(e) => setOrCusPhone2(e.target.value.replace(/\D/g, ""))}
                                             style={s.receiptInput}
                                             className="rinp"
                                         />
