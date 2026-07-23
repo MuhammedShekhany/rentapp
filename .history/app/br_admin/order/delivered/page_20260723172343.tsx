@@ -385,6 +385,14 @@ export default function DeliveryPage() {
                             >
                               تأمين
                             </button>
+                             <button
+                              onClick={() =>
+                                router.push(`/br_admin/order/payment/${item.or_id}`)
+                              }
+                              className="bg-amber-500 text-white px-4 py-2 rounded-lg"
+                            >
+                              الدفع
+                            </button>
 
                           </div>
                         </td>

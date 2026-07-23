@@ -377,7 +377,7 @@ export default function EditOrderPage() {
       <div style={s.topBar}>
         <div style={s.topBarInner}>
           <div style={s.topBarLeft}>
-            <button onClick={() => router.back()} style={s.backBtn} className="top-btn">
+            <button  onClick={() => router.back()} style={s.backBtn} className="top-btn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
@@ -386,22 +386,6 @@ export default function EditOrderPage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={s.orderIdChip}>تعديل الطلب #{or_no}</span>
-          </div>
-          <div style={s.topBarRight}>
-            <button onClick={handleUpdate} disabled={loading} style={s.saveBtn} className="save-btn">
-              {loading ? (
-                <><span className="spinner" style={s.spinner} /> جاري الحفظ...</>
-              ) : (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                    <polyline points="17 21 17 13 7 13 7 21" />
-                    <polyline points="7 3 7 8 15 8" />
-                  </svg>
-                  حفظ التعديلات
-                </>
-              )}
-            </button>
           </div>
         </div>
       </div>

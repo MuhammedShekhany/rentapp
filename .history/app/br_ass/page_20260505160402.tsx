@@ -90,7 +90,7 @@ export default function AdminPage() {
   {
     title: "الطلبات الحجوزات",
     desc: "إدارة الطلبات الحجوزات",
-    path: "/br_admin/order/order_user",
+    path: "/br_admin/order",
     icon: <ShoppingCart size={28} />,
     color: "from-pink-500 to-rose-600",
   },
